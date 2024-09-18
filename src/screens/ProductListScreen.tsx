@@ -8,15 +8,14 @@ interface Product {
 }
 
 const ProductListScreen: React.FC = () => {
-  // Örnek ürün listesi
+ 
   const products: Product[] = [
     { id: 4, name: 'Ürün 1', stock: 5 },
     { id: 5, name: 'Ürün 2', stock: 0 },
     { id: 6, name: 'Ürün 3', stock: 15 },
     { id: 7, name: 'Ürün 4', stock: 3 },
     { id: 8, name: 'Ürün 5', stock: 321 },
-    { id: 9, name: 'Ürün 6', stock: 321 },
-    
+    { id: 9, name: 'Ürün 6', stock: 0 },
   ];
 
   return (
@@ -33,6 +32,7 @@ const ProductListScreen: React.FC = () => {
             </Text>
           </View>
         )}
+        contentContainerStyle={{ paddingBottom: 100 }} // Buraya paddingBottom ekledik
       />
     </View>
   );

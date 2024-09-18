@@ -1,6 +1,6 @@
-import  React from 'react';
+import React from 'react';
 import { Avatar, Card, IconButton } from 'react-native-paper';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
 
 interface Product {
@@ -12,36 +12,33 @@ interface Product {
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   
-  
   const products: Product[] = [
     { id: 1, name: 'Ürün 1', stock: 5 },
     { id: 2, name: 'Ürün 2', stock: 0 },
     { id: 3, name: 'Ürün 3', stock: 15 },
   ];
 
-  
   const lowStockProducts = products.filter(product => product.stock < 10 && product.stock > 0).length;
   const zeroStockProducts = products.filter(product => product.stock == 0).length;
 
+  const summaryCards = [
+    { title: 'Toplam Ürünler', value: products.length, backgroundColor: '#007bff' },  // Mavi
+    { title: 'Düşük Stokta Olanlar', value: lowStockProducts, backgroundColor: '#ffc107' },  // Sarı
+    { title: 'Stokta Olmayanlar', value: zeroStockProducts, backgroundColor: '#dc3545' },  // Kırmızı
+  ];
+
   return (
     <View style={styles.container}>
-     
-      <View style={styles.summaryContainer}>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Toplam Ürünler</Text>
-          <Text style={styles.cardValue}>{products.length}</Text>
-        </View>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Düşük Stokta Olanlar</Text>
-          <Text style={styles.cardValue}>{lowStockProducts}</Text>
-        </View>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Stokta Olmayanlar</Text>
-          <Text style={styles.cardValue}>{zeroStockProducts}</Text>
-        </View>
-      </View>
-
       
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.summaryContainer}>
+        {summaryCards.map((card, index) => (
+          <View key={index} style={[styles.card, { backgroundColor: card.backgroundColor }]}>
+            <Text style={styles.cardTitle}>{card.title}</Text>
+            <Text style={styles.cardValue}>{card.value}</Text>
+          </View>
+        ))}
+      </ScrollView>
+
       <View style={styles.quickActions}>
         <TouchableOpacity
           style={styles.button}
@@ -57,7 +54,6 @@ const HomeScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-    
       <Text style={styles.sectionTitle}>Son Eklenen Ürünler</Text>
       <FlatList
         data={products}
@@ -86,25 +82,24 @@ const styles = StyleSheet.create({
   },
   summaryContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     marginBottom: 20,
   },
   card: {
-    flex: 1,
+    width: 332, 
     padding: 16,
-    backgroundColor: '#f8f9fa',
     borderRadius: 8,
     alignItems: 'center',
-    marginHorizontal: 5,
+    marginHorizontal: 10,
   },
   cardTitle: {
     fontSize: 16,
-    color: '#6c757d',
-    marginBottom: 8,
+    color: '#000000',
+    marginBottom: 8,    
   },
   cardValue: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#000000'
   },
   quickActions: {
     flexDirection: 'row',
