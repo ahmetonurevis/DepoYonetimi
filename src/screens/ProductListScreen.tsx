@@ -16,6 +16,9 @@ const ProductListScreen: React.FC = () => {
     { id: 7, name: 'Ürün 4', stock: 3 },
     { id: 8, name: 'Ürün 5', stock: 321 },
     { id: 9, name: 'Ürün 6', stock: 0 },
+    { id: 10, name: 'Ürün 7', stock: 12 },
+    { id: 11, name: 'Ürün 8', stock: 4 },
+    { id: 12, name: 'Ürün 9', stock: 10 },
   ];
 
   return (
@@ -31,7 +34,7 @@ const ProductListScreen: React.FC = () => {
             </Text>
           </View>
         )}
-        contentContainerStyle={{ paddingBottom: 100 }} // Buraya paddingBottom ekledik
+        contentContainerStyle={{ paddingBottom: 100 }} 
       />
     </View>
   );
