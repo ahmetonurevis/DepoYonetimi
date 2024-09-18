@@ -20,7 +20,6 @@ const ProductListScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Ürün Listesi</Text>
       <FlatList
         data={products}
         keyExtractor={(item) => item.id.toString()}
@@ -43,12 +42,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
   },
   productItem: {
     padding: 16,
