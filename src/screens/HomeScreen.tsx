@@ -1,4 +1,4 @@
-import React from 'react';
+import  React from 'react';
 import { Avatar, Card, IconButton } from 'react-native-paper';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
@@ -11,7 +11,7 @@ interface Product {
 
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
-
+  
   // Ürünler dizisi
   const products: Product[] = [
     { id: 1, name: 'Ürün 1', stock: 5 },
@@ -67,8 +67,8 @@ const HomeScreen: React.FC = () => {
             <Card.Title
               title={item.name}
               subtitle={`Stok: ${item.stock > 0 ? item.stock : 'Stokta Yok!'}`}
-              left={(props) => <Avatar.Icon {...props} icon="folder" />}  
-              right={(props) => <IconButton {...props} icon="dots-vertical" onPress={() => { }} />}  
+              left={(props) => <Avatar.Icon {...props} icon="folder" />}
+              right={(props) => <IconButton {...props} icon="dots-vertical" onPress={() => {}} />}
             />
           </Card>
         )}
