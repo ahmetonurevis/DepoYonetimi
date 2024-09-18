@@ -12,20 +12,20 @@ interface Product {
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   
-  // Ürünler dizisi
+  
   const products: Product[] = [
     { id: 1, name: 'Ürün 1', stock: 5 },
     { id: 2, name: 'Ürün 2', stock: 0 },
     { id: 3, name: 'Ürün 3', stock: 15 },
   ];
 
-  // Düşük stok ve sıfır stok ürün sayıları
+  
   const lowStockProducts = products.filter(product => product.stock < 10 && product.stock > 0).length;
   const zeroStockProducts = products.filter(product => product.stock == 0).length;
 
   return (
     <View style={styles.container}>
-      {/* Ürün Özeti */}
+     
       <View style={styles.summaryContainer}>
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Toplam Ürünler</Text>
@@ -41,7 +41,7 @@ const HomeScreen: React.FC = () => {
         </View>
       </View>
 
-      {/* Hızlı Eylemler */}
+      
       <View style={styles.quickActions}>
         <TouchableOpacity
           style={styles.button}
@@ -57,7 +57,7 @@ const HomeScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Son Eklenen Ürünler */}
+    
       <Text style={styles.sectionTitle}>Son Eklenen Ürünler</Text>
       <FlatList
         data={products}

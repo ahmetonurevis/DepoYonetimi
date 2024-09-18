@@ -154,12 +154,12 @@ const App: React.FC = () => {
         style={styles.gradientBackground}
       >
         <View style={styles.menuContainer}>
-          <Text style={styles.menuText}>Menu Item 1</Text>
+          <Text style={styles.menuText}>Deneme</Text>
           <Text style={styles.menuText}>Menu Item 2</Text>
           <Text style={styles.menuText}>Menu Item 3</Text>
 
           <Pressable onPress={toggleAnimation} style={styles.backButton}>
-            <Text style={styles.backButtonText}>Geri</Text>
+            <Text style={styles.backButtonText}>Geri Dön</Text>
           </Pressable>
         </View>
       </LinearGradient>
