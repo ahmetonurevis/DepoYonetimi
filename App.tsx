@@ -1,117 +1,258 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, { useState } from 'react';
 import {
+  Animated,
+  Dimensions,
+  Easing,
+  Image,
+  Pressable,
   SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
 } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import BottomTabNavigator from './src/navigation/BottomTabNavigator';
+import Svg, { Path } from 'react-native-svg';
+import { SearchBar } from 'react-native-elements'; 
+import LinearGradient from 'react-native-linear-gradient';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const App: React.FC = () => {
+  const [anim] = useState(new Animated.Value(0));
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState<string>(''); 
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const easing = Easing.bezier(0.4, 0, 0.2, 1);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const toggleAnimation = () => {
+    Animated.timing(anim, {
+      toValue: open ? 0 : 1,
+      duration: 400,
+      easing,
+      useNativeDriver: true,
+    }).start();
+    setOpen(!open);
+  };
+
+  
+  const partInterpolation1 = anim.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ['M 3,12.5 3.01,12.5', 'M 3,3 3.001,3', 'M 3,3 12.5,12.5'],
+  });
+  const partInterpolation2 = anim.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [
+      'M 12.5,12.5 12.5005,12.5 12.501,12.5',
+      'M 12.5,12.5 12.5005,12.5 12.501,12.5',
+      'M 3,22 12.5,12.5 22,3',
+    ],
+  });
+  const partInterpolation3 = anim.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [
+      'M 22,12.5 22.01,12.5',
+      'M 22,22 22.01,22',
+      'M 12.5,12.5 22,22',
+    ],
+  });
+
+  
+  const sheetInterpolation = anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [Dimensions.get('window').width * -1, 0],
+  });
+  const sheetAnimationStyle = {
+    transform: [
+      {
+        translateX: sheetInterpolation,
+      },
+    ],
+  };
+
+  
+  const updateSearch = (text: string) => {
+    setSearch(text);
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+    <NavigationContainer>
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="dark-content" />
+
+        
+        <View style={styles.headerContainer}>
+          
+          <View style={styles.logoContainer}>
+            <Image 
+              source={require('./src/assets/logo.png')} 
+              resizeMode='contain'
+              style={{ 
+                width: 50, 
+                height: 50 
+              }} 
+            /> 
+          </View>
+
+          
+          <View style={styles.searchBarContainer}>
+            <SearchBar
+              placeholder=""
+              onChangeText={(text: string) => updateSearch(text)} 
+              value={search}
+              containerStyle={styles.searchBar}
+              inputContainerStyle={styles.searchInput}
+              searchIcon={{ name:'search', size: 24 }}
+            />
+          </View>
+
+          
+          <View style={styles.hamburgerContainer}>
+            <Pressable onPress={toggleAnimation}>
+              <View style={styles.hamburger}>
+                <Svg width="25" height="25" viewBox="0 0 25 25" fill="none">
+                  <AnimatedPath
+                    d={partInterpolation1}
+                    fill="none"
+                    stroke="#282828"
+                    strokeWidth={3}
+                    strokeLinecap="round"
+                  />
+                  <AnimatedPath
+                    d={partInterpolation2}
+                    fill="none"
+                    stroke="#282828"
+                    strokeWidth={3}
+                    strokeLinecap="round"
+                  />
+                  <AnimatedPath
+                    d={partInterpolation3}
+                    fill="none"
+                    stroke="#282828"
+                    strokeWidth={3}
+                    strokeLinecap="round"
+                  />
+                </Svg>
+              </View>
+            </Pressable>
+          </View>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+
+        
+        <BottomTabNavigator />
+
+        {/* siyah ekran */}
+        {open && (
+  <SafeAreaView style={styles.menuSheetContainer}>
+    <Animated.View style={[styles.menuSheet, sheetAnimationStyle]}>
+      <LinearGradient
+        colors={['#ff9a9e', '#fad0c4', '#fad0c4']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradientBackground}
+      >
+        <View style={styles.menuContainer}>
+          <Text style={styles.menuText}>Menu Item 1</Text>
+          <Text style={styles.menuText}>Menu Item 2</Text>
+          <Text style={styles.menuText}>Menu Item 3</Text>
+
+          <Pressable onPress={toggleAnimation} style={styles.backButton}>
+            <Text style={styles.backButtonText}>Geri</Text>
+          </Pressable>
+        </View>
+      </LinearGradient>
+    </Animated.View>
+  </SafeAreaView>
+)}
+
+      </SafeAreaView>
+    </NavigationContainer>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  logoContainer: {
+    flex: 1,
+    alignItems: 'flex-start',
   },
-  highlight: {
-    fontWeight: '700',
+  searchBarContainer: {
+    flex: 2,
+    justifyContent: 'center',
+  },
+  searchBar: {
+    backgroundColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderTopColor: 'transparent',
+  },
+  searchInput: {
+    backgroundColor: '#f1f1f1',
+    borderRadius: 20,
+  },
+  gradientBackground: {
+    flex: 1,  
+    width: '100%',  // Tam ekran genişliği kapla
+    height: '100%',  // Tam ekran yüksekliği kapla
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 0,  // Köşeleri yuvarlamayı kaldır
+  },
+  hamburgerContainer: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  hamburger: {
+    alignItems: 'center',
+    height: 50,
+    justifyContent: 'center',
+    width: 50,
+  },
+  menuSheetContainer: {
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menuSheet: {
+    flex: 1,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menuContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menuText: {
+    color: '#fff',
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginVertical: 10,
+  },
+  backButton: {
+    marginTop: 30,
+    padding: 15,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+  },
+  backButtonText: {
+    color: '#000',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
 
