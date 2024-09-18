@@ -202,11 +202,11 @@ const styles = StyleSheet.create({
   },
   gradientBackground: {
     flex: 1,  
-    width: '100%',  // Tam ekran genişliği kapla
-    height: '100%',  // Tam ekran yüksekliği kapla
+    width: '100%',  
+    height: '100%',  
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 0,  // Köşeleri yuvarlamayı kaldır
+    borderRadius: 0,  
   },
   hamburgerContainer: {
     flex: 1,
