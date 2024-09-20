@@ -100,8 +100,8 @@ const App: React.FC = () => {
     <NavigationContainer>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}  // Klavye açıldığında kayma davranışı
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} // iOS için klavye offset'i
+        behavior="height"  
+        keyboardVerticalOffset={0} 
       >
         <SafeAreaView style={styles.container}>
           <StatusBar barStyle="dark-content" />
