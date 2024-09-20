@@ -30,14 +30,21 @@ const HomeScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.summaryContainer}>
-        {summaryCards.map((card, index) => (
-          <View key={index} style={[styles.card, { backgroundColor: card.backgroundColor }]}>
-            <Text style={styles.cardTitle}>{card.title}</Text>
-            <Text style={styles.cardValue}>{card.value}</Text>
-          </View>
-        ))}
-      </ScrollView>
+      <ScrollView
+  horizontal
+  showsHorizontalScrollIndicator={true}
+  style={styles.summaryContainer}
+  snapToInterval={332 + 20} 
+  decelerationRate="fast" 
+  pagingEnabled 
+>
+  {summaryCards.map((card, index) => (
+    <View key={index} style={[styles.card, { backgroundColor: card.backgroundColor }]}>
+      <Text style={styles.cardTitle}>{card.title}</Text>
+      <Text style={styles.cardValue}>{card.value}</Text>
+    </View>
+  ))}
+</ScrollView>
 
       <View style={styles.quickActions}>
         <TouchableOpacity
@@ -85,6 +92,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   card: {
+    height:100,
     width: 332, 
     padding: 16,
     borderRadius: 8,
@@ -94,6 +102,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     color: '#000000',
+    fontWeight: 'bold',
     marginBottom: 8,    
   },
   cardValue: {

@@ -17,7 +17,6 @@ import Svg, { Path } from 'react-native-svg';
 import { SearchBar } from 'react-native-elements'; 
 import LinearGradient from 'react-native-linear-gradient';
 
-
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 const App: React.FC = () => {
@@ -143,19 +142,20 @@ const App: React.FC = () => {
         
         <BottomTabNavigator />
 
-        {/* siyah ekran */}
+        
         {open && (
   <SafeAreaView style={styles.menuSheetContainer}>
     <Animated.View style={[styles.menuSheet, sheetAnimationStyle]}>
       <LinearGradient
         colors={['#ff9a9e', '#fad0c4', '#fad0c4']}
         start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+        end={{ x: 2, y: 2 }}
         style={styles.gradientBackground}
       >
         <View style={styles.menuContainer}>
           <Text style={styles.menuText}>Deneme</Text>
           <Text style={styles.menuText}>Menu Item 2</Text>
+          <Text style={styles.menuText}>Menu Item 3</Text>
           <Text style={styles.menuText}>Menu Item 3</Text>
 
           <Pressable onPress={toggleAnimation} style={styles.backButton}>
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
   },
   menuSheetContainer: {
     position: 'absolute',
-    height: '100%',
+    height: '40%',
     width: '100%',
     backgroundColor: '#000',
     justifyContent: 'center',
@@ -236,10 +236,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    
   },
   menuText: {
     color: '#fff',
-    fontSize: 30,
+    fontSize: 20,
     fontWeight: 'bold',
     marginVertical: 10,
   },
