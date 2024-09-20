@@ -1,6 +1,5 @@
-import React from 'react';
-import { Avatar, Card, IconButton } from 'react-native-paper';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Dimensions, Animated } from 'react-native';
 import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -32,24 +31,54 @@ const HomeScreen: React.FC = () => {
   const cardWidth = screenWidth * 0.85;  
   const cardSpacing = 18;  
 
+  const scrollX = useRef(new Animated.Value(0)).current;
+
   return (
     <View style={styles.container}>
       
-      <ScrollView
+      <Animated.ScrollView
         horizontal
-        showsHorizontalScrollIndicator={true}
+        showsHorizontalScrollIndicator={false}
         style={styles.summaryContainer}
         snapToInterval={cardWidth + cardSpacing} 
         decelerationRate="fast"
+        scrollEventThrottle={16}
         pagingEnabled
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: true }
+        )}
       >
-        {summaryCards.map((card, index) => (
-          <View key={index} style={[styles.card, { backgroundColor: card.backgroundColor, width: cardWidth }]}>
-            <Text style={styles.cardTitle}>{card.title}</Text>
-            <Text style={styles.cardValue}>{card.value}</Text>
-          </View>
-        ))}
-      </ScrollView>
+        {summaryCards.map((card, index) => {
+          const inputRange = [
+            (index - 1) * (cardWidth + cardSpacing),
+            index * (cardWidth + cardSpacing),
+            (index + 1) * (cardWidth + cardSpacing),
+          ];
+
+          const scale = scrollX.interpolate({
+            inputRange,
+            outputRange: [0.9, 1, 0.9], // Ortadaki kart büyük olur
+            extrapolate: 'clamp',
+          });
+
+          return (
+            <Animated.View
+              key={index}
+              style={[
+                styles.card,
+                { backgroundColor: card.backgroundColor, width: cardWidth, transform: [{ scale }] },
+              ]}
+            >
+              <Text style={styles.cardTitle}>{card.title}</Text>
+              <Text style={styles.cardValue}>{card.value}</Text>
+
+              
+              {/* <Image source={require('./path-to-your-image.jpg')} style={styles.cardImage} /> */}
+            </Animated.View>
+          );
+        })}
+      </Animated.ScrollView>
 
       <View style={styles.quickActions}>
         <TouchableOpacity
@@ -71,14 +100,10 @@ const HomeScreen: React.FC = () => {
         data={products}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <Card style={styles.productItem}>
-            <Card.Title
-              title={item.name}
-              subtitle={`Stok: ${item.stock > 0 ? item.stock : 'Stokta Yok!'}`}
-              left={(props) => <Avatar.Icon {...props} icon="package-variant" />}
-              
-            />
-          </Card>
+          <View style={styles.productItem}>
+            <Text>{item.name}</Text>
+            <Text>{item.stock > 0 ? `Stok: ${item.stock}` : 'Stokta Yok!'}</Text>
+          </View>
         )}
         contentContainerStyle={{ paddingBottom: 120 }}
       />
@@ -102,6 +127,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginHorizontal: 10,
+    justifyContent: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   cardTitle: {
     fontSize: 16,
@@ -139,12 +170,20 @@ const styles = StyleSheet.create({
   productItem: {
     marginVertical: 8,
     marginHorizontal: 5,
+    padding: 20,
     borderRadius: 8,
+    backgroundColor: '#f9f9f9',
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+  },
+  cardImage: {
+    width: '100%',
+    height: 100,
+    borderRadius: 8,
+    marginBottom: 10,
   },
 });
 

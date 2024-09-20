@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Animated,
   Dimensions,
@@ -10,13 +10,16 @@ import {
   StyleSheet,
   Text,
   View,
+  PanResponder,
+  KeyboardAvoidingView,  // Klavye ile etkileşim için eklendi
+  Platform,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import BottomTabNavigator from './src/navigation/BottomTabNavigator';
 import Svg, { Path } from 'react-native-svg';
 import { SearchBar } from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
-import { BlurView } from '@react-native-community/blur'
+import { BlurView } from '@react-native-community/blur';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const { width, height } = Dimensions.get('window');
@@ -29,6 +32,21 @@ const App: React.FC = () => {
   const [search, setSearch] = useState<string>('');
 
   const easing = Easing.bezier(0.4, 0, 0.2, 1);
+  const pan = useRef(new Animated.ValueXY()).current;
+
+  const panResponder = PanResponder.create({
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderMove: Animated.event(
+      [null, { dy: pan.y }],
+      { useNativeDriver: false }
+    ),
+    onPanResponderRelease: () => {
+      Animated.spring(pan, {
+        toValue: { x: 0, y: 0 },
+        useNativeDriver: false,
+      }).start();
+    },
+  });
 
   const toggleAnimation = () => {
     Animated.timing(anim, {
@@ -65,6 +83,7 @@ const App: React.FC = () => {
     inputRange: [0, 1],
     outputRange: [width * -1, 0],
   });
+
   const sheetAnimationStyle = {
     transform: [
       {
@@ -79,142 +98,173 @@ const App: React.FC = () => {
 
   return (
     <NavigationContainer>
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="dark-content" />
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}  // Klavye açıldığında kayma davranışı
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} // iOS için klavye offset'i
+      >
+        <SafeAreaView style={styles.container}>
+          <StatusBar barStyle="dark-content" />
 
-        <View style={styles.headerContainer}>
-          <View style={styles.logoContainer}>
-            <Image
-              source={require('./src/assets/logo.png')}
-              resizeMode='contain'
-              style={{
-                width: width * 0.1,
-                height: height * 0.05,
-              }}
-            />
+          <View style={styles.headerContainer}>
+            <View style={styles.logoContainer}>
+              <Image
+                source={require('./src/assets/logo.png')}
+                resizeMode="contain"
+                style={{
+                  width: width * 0.1,
+                  height: height * 0.05,
+                }}
+              />
+            </View>
+
+            <View style={styles.searchBarContainer}>
+              <SearchBar
+                placeholder="Search"
+                onChangeText={(text: string) => updateSearch(text)}
+                value={search}
+                containerStyle={styles.searchBar}
+                inputContainerStyle={styles.searchInput}
+                searchIcon={{ name: 'search', size: width * 0.06 }}
+              />
+            </View>
+
+            <View style={styles.hamburgerContainer}>
+              <Pressable onPress={toggleAnimation}>
+                <View style={styles.hamburger}>
+                  <Svg width={width * 0.07} height={height * 0.07} viewBox="0 0 25 25" fill="none">
+                    <AnimatedPath
+                      d={partInterpolation1}
+                      fill="none"
+                      stroke="#282828"
+                      strokeWidth={3}
+                      strokeLinecap="round"
+                    />
+                    <AnimatedPath
+                      d={partInterpolation2}
+                      fill="none"
+                      stroke="#282828"
+                      strokeWidth={3}
+                      strokeLinecap="round"
+                    />
+                    <AnimatedPath
+                      d={partInterpolation3}
+                      fill="none"
+                      stroke="#282828"
+                      strokeWidth={3}
+                      strokeLinecap="round"
+                    />
+                  </Svg>
+                </View>
+              </Pressable>
+            </View>
           </View>
 
-          <View style={styles.searchBarContainer}>
-            <SearchBar
-              placeholder="Search"
-              onChangeText={(text: string) => updateSearch(text)}
-              value={search}
-              containerStyle={styles.searchBar}
-              inputContainerStyle={styles.searchInput}
-              searchIcon={{ name: 'search', size: width * 0.06 }}
-            />
-          </View>
+          <BottomTabNavigator />
 
-          <View style={styles.hamburgerContainer}>
-            <Pressable onPress={toggleAnimation}>
-              <View style={styles.hamburger}>
-                <Svg width={width * 0.07} height={height * 0.07} viewBox="0 0 25 25" fill="none">
-                  <AnimatedPath
-                    d={partInterpolation1}
-                    fill="none"
-                    stroke="#282828"
-                    strokeWidth={3}
-                    strokeLinecap="round"
-                  />
-                  <AnimatedPath
-                    d={partInterpolation2}
-                    fill="none"
-                    stroke="#282828"
-                    strokeWidth={3}
-                    strokeLinecap="round"
-                  />
-                  <AnimatedPath
-                    d={partInterpolation3}
-                    fill="none"
-                    stroke="#282828"
-                    strokeWidth={3}
-                    strokeLinecap="round"
-                  />
+          {open && (
+            <>
+              <BlurView
+                style={StyleSheet.absoluteFill}
+                blurType="dark"
+                blurAmount={6}
+                reducedTransparencyFallbackColor="white"
+              />
 
-                </Svg>
-              </View>
-            </Pressable>
-          </View>
-        </View>
-
-        <BottomTabNavigator />
-
-        {open && (
-          <>
-           
-            <BlurView
-              style={StyleSheet.absoluteFill}
-              blurType="dark"
-              blurAmount={6}
-              reducedTransparencyFallbackColor="white"
-            />
-
-            <SafeAreaView style={styles.menuSheetContainer}>
-              <Animated.View style={[styles.menuSheet, sheetAnimationStyle]}>
+              <SafeAreaView style={styles.menuSheetContainer}>
                 <LinearGradient
                   colors={['#ff9a9e', '#fad0c4', '#fad0c4']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 2, y: 2 }}
-                  style={styles.gradientBackground}
+                  style={StyleSheet.absoluteFill}
+                />
+                <Animated.View
+                  {...panResponder.panHandlers}
+                  style={[
+                    styles.menuSheet,
+                    sheetAnimationStyle,
+                    { transform: [{ translateY: pan.y }] },
+                  ]}
                 >
-                  <View style={styles.menuContainer}>
-                    <Image
-                      source={require('./src/assets/profil.png')}
-                      style={{
-                        width: width * 0.2,
-                        height: width * 0.2,
-                        borderRadius: (width * 0.2) / 2,
-                        marginBottom: height * 0.02,
-                      }}
-                    />
-                    <Text style={[styles.profileName, { fontSize: width * 0.05 }]}>Ahmet Onur Evis</Text>
-                    <Text style={[styles.profileRole, { fontSize: width * 0.035 }]}>Yönetici</Text>
+                  <LinearGradient
+                    colors={['#ff9a9e', '#fad0c4', '#fad0c4']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 2, y: 2 }}
+                    style={styles.gradientBackground}
+                  >
+                    <View style={styles.menuContainer}>
+                      <Image
+                        source={require('./src/assets/profil.png')}
+                        style={{
+                          width: width * 0.2,
+                          height: width * 0.2,
+                          borderRadius: (width * 0.2) / 2,
+                          marginBottom: height * 0.02,
+                        }}
+                      />
+                      <Text style={[styles.profileName, { fontSize: width * 0.05 }]}>
+                        Ahmet Onur Evis
+                      </Text>
+                      <Text style={[styles.profileRole, { fontSize: width * 0.035 }]}>
+                        Yönetici
+                      </Text>
 
-                   
-                    <View style={styles.menuItem}>
-                      <Icon name="home" size={24} color="#540a0a" />
-                      <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Anasayfa</Text>
+                      <View style={styles.menuItem}>
+                        <Icon name="home" size={24} color="#540a0a" />
+                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>
+                          Anasayfa
+                        </Text>
+                      </View>
+
+                      <View style={styles.menuItem}>
+                        <Icon name="inventory" size={24} color="#540a0a" />
+                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>
+                          Ürünlerim
+                        </Text>
+                      </View>
+
+                      <View style={styles.menuItem}>
+                        <Icon name="shopping-cart" size={24} color="#540a0a" />
+                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>
+                          Siparişler
+                        </Text>
+                      </View>
+
+                      <View style={styles.menuItem}>
+                        <Icon name="notifications" size={24} color="#540a0a" />
+                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>
+                          Bildirimler
+                        </Text>
+                      </View>
+
+                      <View style={styles.menuItem}>
+                        <Icon name="support-agent" size={24} color="#540a0a" />
+                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>
+                          Destek
+                        </Text>
+                      </View>
+
+                      <View style={styles.menuItem}>
+                        <Icon name="exit-to-app" size={24} color="#540a0a" />
+                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>
+                          Çıkış Yap
+                        </Text>
+                      </View>
+
+                      <Pressable onPress={toggleAnimation} style={styles.closeButton}>
+                        <Text style={styles.closeButtonText}>Close</Text>
+                      </Pressable>
                     </View>
-
-                    <View style={styles.menuItem}>
-                      <Icon name="inventory" size={24} color="#540a0a" />
-                      <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Ürünlerim</Text>
-                    </View>
-
-                    <View style={styles.menuItem}>
-                      <Icon name="shopping-cart" size={24} color="#540a0a" />
-                      <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Siparişler</Text>
-                    </View>
-
-                    <View style={styles.menuItem}>
-                      <Icon name="notifications" size={24} color="#540a0a" />
-                      <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Bildirimler</Text>
-                    </View>
-
-                    <View style={styles.menuItem}>
-                      <Icon name="support-agent" size={24} color="#540a0a" />
-                      <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Destek</Text>
-                    </View>
-
-                    <View style={styles.menuItem}>
-                      <Icon name="exit-to-app" size={24} color="#540a0a" />
-                      <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Çıkış Yap</Text>
-                    </View>
-
-                    <Pressable onPress={toggleAnimation} style={styles.closeButton}>
-                      <Text style={styles.closeButtonText}>Close</Text>
-                    </Pressable>
-                  </View>
-                </LinearGradient>
-              </Animated.View>
-            </SafeAreaView>
-          </>
-        )}
-      </SafeAreaView>
+                  </LinearGradient>
+                </Animated.View>
+              </SafeAreaView>
+            </>
+          )}
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     </NavigationContainer>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -258,7 +308,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     height: '100%',
     width: '80%',
-    backgroundColor: '#000',
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -297,21 +347,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   menuItem: {
-    flexDirection: 'row',  
-    alignItems: 'center',  
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: width * 0.05,
     paddingVertical: height * 0.02,
   },
   menuText: {
     color: '#fff',
     fontWeight: 'bold',
-    marginLeft: width * 0.02, 
-    textAlign:'left', 
-  },
-  menuDivider: {
-    height: 1,
-    backgroundColor: '#fff',
-    opacity: 0.3,
+    marginLeft: width * 0.02,
+    textAlign: 'left',
   },
   closeButton: {
     marginTop: height * 0.03,
