@@ -16,15 +16,17 @@ import BottomTabNavigator from './src/navigation/BottomTabNavigator';
 import Svg, { Path } from 'react-native-svg';
 import { SearchBar } from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
+import { BlurView } from '@react-native-community/blur'
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const { width, height } = Dimensions.get('window'); 
+const { width, height } = Dimensions.get('window');
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 const App: React.FC = () => {
   const [anim] = useState(new Animated.Value(0));
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState<string>(''); 
+  const [search, setSearch] = useState<string>('');
 
   const easing = Easing.bezier(0.4, 0, 0.2, 1);
 
@@ -61,7 +63,7 @@ const App: React.FC = () => {
 
   const sheetInterpolation = anim.interpolate({
     inputRange: [0, 1],
-    outputRange: [width * -1, 0], 
+    outputRange: [width * -1, 0],
   });
   const sheetAnimationStyle = {
     transform: [
@@ -82,24 +84,24 @@ const App: React.FC = () => {
 
         <View style={styles.headerContainer}>
           <View style={styles.logoContainer}>
-            <Image 
-              source={require('./src/assets/logo.png')} 
+            <Image
+              source={require('./src/assets/logo.png')}
               resizeMode='contain'
               style={{
-                width: width * 0.1, 
-                height: height * 0.05, 
-              }} 
-            /> 
+                width: width * 0.1,
+                height: height * 0.05,
+              }}
+            />
           </View>
 
           <View style={styles.searchBarContainer}>
             <SearchBar
               placeholder="Search"
-              onChangeText={(text: string) => updateSearch(text)} 
+              onChangeText={(text: string) => updateSearch(text)}
               value={search}
               containerStyle={styles.searchBar}
               inputContainerStyle={styles.searchInput}
-              searchIcon={{ name:'search', size: width * 0.06 }} 
+              searchIcon={{ name: 'search', size: width * 0.06 }}
             />
           </View>
 
@@ -128,6 +130,7 @@ const App: React.FC = () => {
                     strokeWidth={3}
                     strokeLinecap="round"
                   />
+
                 </Svg>
               </View>
             </Pressable>
@@ -137,67 +140,81 @@ const App: React.FC = () => {
         <BottomTabNavigator />
 
         {open && (
-          <SafeAreaView style={styles.menuSheetContainer}>
-            <Animated.View style={[styles.menuSheet, sheetAnimationStyle]}>
-              <LinearGradient
-                colors={['#ff9a9e', '#fad0c4', '#fad0c4']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 2, y: 2 }}
-                style={styles.gradientBackground}
-              >
-                <View style={styles.menuContainer}>
-                  <Image 
-                    source={require('./src/assets/profil.png')} 
-                    style={{
-                      width: width * 0.2, 
-                      height: width * 0.2, 
-                      borderRadius: (width * 0.2) / 2, 
-                      marginBottom: height * 0.02,
-                    }}
-                  />
-                  <Text style={[styles.profileName, { fontSize: width * 0.05 }]}>Ahmet Onur Evis</Text>
-                  <Text style={[styles.profileRole, { fontSize: width * 0.035 }]}>Yönetici</Text>
+          <>
+           
+            <BlurView
+              style={StyleSheet.absoluteFill}
+              blurType="dark"
+              blurAmount={6}
+              reducedTransparencyFallbackColor="white"
+            />
 
-                  {/** Menü öğeleri sola yaslanmış ve altlarına çizgi eklenmiş */}
-                  <View style={styles.menuItem}>
-                    <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Deneme</Text>
-                    <View style={styles.menuDivider} />
+            <SafeAreaView style={styles.menuSheetContainer}>
+              <Animated.View style={[styles.menuSheet, sheetAnimationStyle]}>
+                <LinearGradient
+                  colors={['#ff9a9e', '#fad0c4', '#fad0c4']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 2, y: 2 }}
+                  style={styles.gradientBackground}
+                >
+                  <View style={styles.menuContainer}>
+                    <Image
+                      source={require('./src/assets/profil.png')}
+                      style={{
+                        width: width * 0.2,
+                        height: width * 0.2,
+                        borderRadius: (width * 0.2) / 2,
+                        marginBottom: height * 0.02,
+                      }}
+                    />
+                    <Text style={[styles.profileName, { fontSize: width * 0.05 }]}>Ahmet Onur Evis</Text>
+                    <Text style={[styles.profileRole, { fontSize: width * 0.035 }]}>Yönetici</Text>
+
+                   
+                    <View style={styles.menuItem}>
+                      <Icon name="home" size={24} color="#540a0a" />
+                      <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Anasayfa</Text>
+                    </View>
+
+                    <View style={styles.menuItem}>
+                      <Icon name="inventory" size={24} color="#540a0a" />
+                      <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Ürünlerim</Text>
+                    </View>
+
+                    <View style={styles.menuItem}>
+                      <Icon name="shopping-cart" size={24} color="#540a0a" />
+                      <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Siparişler</Text>
+                    </View>
+
+                    <View style={styles.menuItem}>
+                      <Icon name="notifications" size={24} color="#540a0a" />
+                      <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Bildirimler</Text>
+                    </View>
+
+                    <View style={styles.menuItem}>
+                      <Icon name="support-agent" size={24} color="#540a0a" />
+                      <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Destek</Text>
+                    </View>
+
+                    <View style={styles.menuItem}>
+                      <Icon name="exit-to-app" size={24} color="#540a0a" />
+                      <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Çıkış Yap</Text>
+                    </View>
+
+                    <Pressable onPress={toggleAnimation} style={styles.closeButton}>
+                      <Text style={styles.closeButtonText}>Close</Text>
+                    </Pressable>
                   </View>
-                  
-                  <View style={styles.menuItem}>
-                    <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Deneme</Text>
-                    <View style={styles.menuDivider} />
-                  </View>
-
-                  <View style={styles.menuItem}>
-                    <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Deneme</Text>
-                    <View style={styles.menuDivider} />
-                  </View>
-
-                  <View style={styles.menuItem}>
-                    <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Deneme</Text>
-                    <View style={styles.menuDivider} />
-                  </View>
-
-                  <View style={styles.menuItem}>
-                    <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Deneme</Text>
-                    <View style={styles.menuDivider} />
-                  </View>
-
-                  
-
-                  <Pressable onPress={toggleAnimation} style={styles.closeButton}>
-                    <Text style={styles.closeButtonText}>Close</Text>
-                  </Pressable>
-                </View>
-              </LinearGradient>
-            </Animated.View>
-          </SafeAreaView>
+                </LinearGradient>
+              </Animated.View>
+            </SafeAreaView>
+          </>
         )}
       </SafeAreaView>
     </NavigationContainer>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -208,7 +225,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: width * 0.02, 
+    padding: width * 0.02,
   },
   logoContainer: {
     flex: 1,
@@ -225,7 +242,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     backgroundColor: '#f1f1f1',
-    borderRadius: width * 0.05, 
+    borderRadius: width * 0.05,
   },
   hamburgerContainer: {
     flex: 1,
@@ -250,6 +267,14 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3.84,
+    elevation: 10,
   },
   gradientBackground: {
     flex: 1,
@@ -272,14 +297,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   menuItem: {
-    width: '100%',
+    flexDirection: 'row',  
+    alignItems: 'center',  
     paddingHorizontal: width * 0.05,
+    paddingVertical: height * 0.02,
   },
   menuText: {
     color: '#fff',
     fontWeight: 'bold',
-    textAlign: 'left',
-    paddingVertical: height * 0.015,
+    marginLeft: width * 0.02, 
+    textAlign:'left', 
   },
   menuDivider: {
     height: 1,

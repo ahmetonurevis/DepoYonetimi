@@ -75,8 +75,8 @@ const HomeScreen: React.FC = () => {
             <Card.Title
               title={item.name}
               subtitle={`Stok: ${item.stock > 0 ? item.stock : 'Stokta Yok!'}`}
-              left={(props) => <Avatar.Icon {...props} icon="folder" />}
-              right={(props) => <IconButton {...props} icon="dots-vertical" onPress={() => {}} />}
+              left={(props) => <Avatar.Icon {...props} icon="package-variant" />}
+              
             />
           </Card>
         )}
