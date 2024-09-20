@@ -14,8 +14,10 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import BottomTabNavigator from './src/navigation/BottomTabNavigator';
 import Svg, { Path } from 'react-native-svg';
-import { SearchBar } from 'react-native-elements'; 
+import { SearchBar } from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
+
+const { width, height } = Dimensions.get('window'); 
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
@@ -36,7 +38,6 @@ const App: React.FC = () => {
     setOpen(!open);
   };
 
-  
   const partInterpolation1 = anim.interpolate({
     inputRange: [0, 0.5, 1],
     outputRange: ['M 3,12.5 3.01,12.5', 'M 3,3 3.001,3', 'M 3,3 12.5,12.5'],
@@ -58,10 +59,9 @@ const App: React.FC = () => {
     ],
   });
 
-  
   const sheetInterpolation = anim.interpolate({
     inputRange: [0, 1],
-    outputRange: [Dimensions.get('window').width * -1, 0],
+    outputRange: [width * -1, 0], 
   });
   const sheetAnimationStyle = {
     transform: [
@@ -71,7 +71,6 @@ const App: React.FC = () => {
     ],
   };
 
-  
   const updateSearch = (text: string) => {
     setSearch(text);
   };
@@ -81,37 +80,33 @@ const App: React.FC = () => {
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" />
 
-        
         <View style={styles.headerContainer}>
-          
           <View style={styles.logoContainer}>
             <Image 
               source={require('./src/assets/logo.png')} 
               resizeMode='contain'
-              style={{ 
-                width: 50, 
-                height: 50 
+              style={{
+                width: width * 0.1, 
+                height: height * 0.05, 
               }} 
             /> 
           </View>
 
-          
           <View style={styles.searchBarContainer}>
             <SearchBar
-              placeholder=""
+              placeholder="Search"
               onChangeText={(text: string) => updateSearch(text)} 
               value={search}
               containerStyle={styles.searchBar}
               inputContainerStyle={styles.searchInput}
-              searchIcon={{ name:'search', size: 24 }}
+              searchIcon={{ name:'search', size: width * 0.06 }} 
             />
           </View>
 
-          
           <View style={styles.hamburgerContainer}>
             <Pressable onPress={toggleAnimation}>
               <View style={styles.hamburger}>
-                <Svg width="25" height="25" viewBox="0 0 25 25" fill="none">
+                <Svg width={width * 0.07} height={height * 0.07} viewBox="0 0 25 25" fill="none">
                   <AnimatedPath
                     d={partInterpolation1}
                     fill="none"
@@ -139,34 +134,66 @@ const App: React.FC = () => {
           </View>
         </View>
 
-        
         <BottomTabNavigator />
 
-        
         {open && (
-  <SafeAreaView style={styles.menuSheetContainer}>
-    <Animated.View style={[styles.menuSheet, sheetAnimationStyle]}>
-      <LinearGradient
-        colors={['#ff9a9e', '#fad0c4', '#fad0c4']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 2, y: 2 }}
-        style={styles.gradientBackground}
-      >
-        <View style={styles.menuContainer}>
-          <Text style={styles.menuText}>Deneme</Text>
-          <Text style={styles.menuText}>Menu Item 2</Text>
-          <Text style={styles.menuText}>Menu Item 3</Text>
-          <Text style={styles.menuText}>Menu Item 3</Text>
+          <SafeAreaView style={styles.menuSheetContainer}>
+            <Animated.View style={[styles.menuSheet, sheetAnimationStyle]}>
+              <LinearGradient
+                colors={['#ff9a9e', '#fad0c4', '#fad0c4']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 2, y: 2 }}
+                style={styles.gradientBackground}
+              >
+                <View style={styles.menuContainer}>
+                  <Image 
+                    source={require('./src/assets/profil.png')} 
+                    style={{
+                      width: width * 0.2, 
+                      height: width * 0.2, 
+                      borderRadius: (width * 0.2) / 2, 
+                      marginBottom: height * 0.02,
+                    }}
+                  />
+                  <Text style={[styles.profileName, { fontSize: width * 0.05 }]}>Ahmet Onur Evis</Text>
+                  <Text style={[styles.profileRole, { fontSize: width * 0.035 }]}>Yönetici</Text>
 
-          <Pressable onPress={toggleAnimation} style={styles.backButton}>
-            <Text style={styles.backButtonText}>Geri Dön</Text>
-          </Pressable>
-        </View>
-      </LinearGradient>
-    </Animated.View>
-  </SafeAreaView>
-)}
+                  {/** Menü öğeleri sola yaslanmış ve altlarına çizgi eklenmiş */}
+                  <View style={styles.menuItem}>
+                    <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Deneme</Text>
+                    <View style={styles.menuDivider} />
+                  </View>
+                  
+                  <View style={styles.menuItem}>
+                    <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Deneme</Text>
+                    <View style={styles.menuDivider} />
+                  </View>
 
+                  <View style={styles.menuItem}>
+                    <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Deneme</Text>
+                    <View style={styles.menuDivider} />
+                  </View>
+
+                  <View style={styles.menuItem}>
+                    <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Deneme</Text>
+                    <View style={styles.menuDivider} />
+                  </View>
+
+                  <View style={styles.menuItem}>
+                    <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Deneme</Text>
+                    <View style={styles.menuDivider} />
+                  </View>
+
+                  
+
+                  <Pressable onPress={toggleAnimation} style={styles.closeButton}>
+                    <Text style={styles.closeButtonText}>Close</Text>
+                  </Pressable>
+                </View>
+              </LinearGradient>
+            </Animated.View>
+          </SafeAreaView>
+        )}
       </SafeAreaView>
     </NavigationContainer>
   );
@@ -181,7 +208,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10,
+    padding: width * 0.02, 
   },
   logoContainer: {
     flex: 1,
@@ -198,15 +225,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     backgroundColor: '#f1f1f1',
-    borderRadius: 20,
-  },
-  gradientBackground: {
-    flex: 1,  
-    width: '100%',  
-    height: '100%',  
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 0,  
+    borderRadius: width * 0.05, 
   },
   hamburgerContainer: {
     flex: 1,
@@ -214,14 +233,14 @@ const styles = StyleSheet.create({
   },
   hamburger: {
     alignItems: 'center',
-    height: 50,
+    height: height * 0.07,
     justifyContent: 'center',
-    width: 50,
+    width: width * 0.1,
   },
   menuSheetContainer: {
     position: 'absolute',
-    height: '40%',
-    width: '100%',
+    height: '100%',
+    width: '80%',
     backgroundColor: '#000',
     justifyContent: 'center',
     alignItems: 'center',
@@ -232,27 +251,50 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  menuContainer: {
+  gradientBackground: {
     flex: 1,
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    
+  },
+  profileName: {
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: height * 0.01,
+  },
+  profileRole: {
+    color: '#fff',
+    marginBottom: height * 0.02,
+  },
+  menuContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menuItem: {
+    width: '100%',
+    paddingHorizontal: width * 0.05,
   },
   menuText: {
     color: '#fff',
-    fontSize: 20,
     fontWeight: 'bold',
-    marginVertical: 10,
+    textAlign: 'left',
+    paddingVertical: height * 0.015,
   },
-  backButton: {
-    marginTop: 30,
-    padding: 15,
+  menuDivider: {
+    height: 1,
     backgroundColor: '#fff',
-    borderRadius: 10,
+    opacity: 0.3,
   },
-  backButtonText: {
+  closeButton: {
+    marginTop: height * 0.03,
+    padding: height * 0.02,
+    backgroundColor: '#fff',
+    borderRadius: width * 0.02,
+  },
+  closeButtonText: {
     color: '#000',
-    fontSize: 20,
+    fontSize: width * 0.05,
     fontWeight: 'bold',
   },
 });

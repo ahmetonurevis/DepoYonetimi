@@ -1,7 +1,9 @@
 import React from 'react';
 import { Avatar, Card, IconButton } from 'react-native-paper';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 interface Product {
   id: number;
@@ -22,29 +24,32 @@ const HomeScreen: React.FC = () => {
   const zeroStockProducts = products.filter(product => product.stock == 0).length;
 
   const summaryCards = [
-    { title: 'Toplam Ürünler', value: products.length, backgroundColor: '#007bff' },  // Mavi
-    { title: 'Düşük Stokta Olanlar', value: lowStockProducts, backgroundColor: '#ffc107' },  // Sarı
-    { title: 'Stokta Olmayanlar', value: zeroStockProducts, backgroundColor: '#dc3545' },  // Kırmızı
+    { title: 'Toplam Ürünler', value: products.length, backgroundColor: '#007bff' },  
+    { title: 'Düşük Stokta Olanlar', value: lowStockProducts, backgroundColor: '#ffc107' },  
+    { title: 'Stokta Olmayanlar', value: zeroStockProducts, backgroundColor: '#dc3545' },  
   ];
+
+  const cardWidth = screenWidth * 0.85;  
+  const cardSpacing = 18;  
 
   return (
     <View style={styles.container}>
       
       <ScrollView
-  horizontal
-  showsHorizontalScrollIndicator={true}
-  style={styles.summaryContainer}
-  snapToInterval={332 + 20} 
-  decelerationRate="fast" 
-  pagingEnabled 
->
-  {summaryCards.map((card, index) => (
-    <View key={index} style={[styles.card, { backgroundColor: card.backgroundColor }]}>
-      <Text style={styles.cardTitle}>{card.title}</Text>
-      <Text style={styles.cardValue}>{card.value}</Text>
-    </View>
-  ))}
-</ScrollView>
+        horizontal
+        showsHorizontalScrollIndicator={true}
+        style={styles.summaryContainer}
+        snapToInterval={cardWidth + cardSpacing} 
+        decelerationRate="fast"
+        pagingEnabled
+      >
+        {summaryCards.map((card, index) => (
+          <View key={index} style={[styles.card, { backgroundColor: card.backgroundColor, width: cardWidth }]}>
+            <Text style={styles.cardTitle}>{card.title}</Text>
+            <Text style={styles.cardValue}>{card.value}</Text>
+          </View>
+        ))}
+      </ScrollView>
 
       <View style={styles.quickActions}>
         <TouchableOpacity
@@ -92,9 +97,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   card: {
-    height:100,
-    width: 332, 
-    padding: 16,
+    height: 130,
+    padding: 20,
     borderRadius: 8,
     alignItems: 'center',
     marginHorizontal: 10,
