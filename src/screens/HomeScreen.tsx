@@ -18,7 +18,7 @@ const HomeScreen: React.FC = () => {
   const [latestProducts, setLatestProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Stok verileri
+  
   const [totalProducts, setTotalProducts] = useState<number>(0);
   const [lowStockProducts, setLowStockProducts] = useState<number>(0);
   const [zeroStockProducts, setZeroStockProducts] = useState<number>(0);
@@ -79,7 +79,7 @@ const HomeScreen: React.FC = () => {
               id: doc.id,
               name: productName,
               stock: productStock,
-              createdAt: createdAt || null,  // Zaman damgasını al
+              createdAt: createdAt || null,  
             });
           });
           setLatestProducts(latestProductList);
@@ -102,7 +102,7 @@ const HomeScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Stok Bilgisi Kartları */}
+      
       <Animated.ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     padding: 20,
     borderRadius: 8,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#000000',
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

@@ -105,7 +105,7 @@ const ProductListScreen: React.FC = () => {
         contentContainerStyle={{ paddingBottom: 100 }} 
       />
 
-      {/* Modal for editing stock */}
+      
       {selectedProduct && (
         <Modal
           animationType="slide"
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   },
   productItem: {
     padding: 16,
-    backgroundColor: '#f1f1f1',
+    backgroundColor: '#000000',
     borderRadius: 8,
     marginBottom: 10,
     flexDirection: 'row',
