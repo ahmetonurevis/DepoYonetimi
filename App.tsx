@@ -1,19 +1,5 @@
 import React, { useState, useRef } from 'react';
-import {
-  Animated,
-  Dimensions,
-  Easing,
-  Image,
-  Pressable,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-  PanResponder,
-  KeyboardAvoidingView,  // Klavye ile etkileşim için eklendi
-  Platform,
-} from 'react-native';
+import { Animated, Dimensions, Easing, Image, Pressable, SafeAreaView, StatusBar, StyleSheet, Text, View, PanResponder, KeyboardAvoidingView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import BottomTabNavigator from './src/navigation/BottomTabNavigator';
 import Svg, { Path } from 'react-native-svg';
@@ -21,10 +7,12 @@ import { SearchBar } from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import firebase from '@react-native-firebase/app';
 
 const { width, height } = Dimensions.get('window');
-
 const AnimatedPath = Animated.createAnimatedComponent(Path);
+
+
 
 const App: React.FC = () => {
   const [anim] = useState(new Animated.Value(0));
@@ -36,10 +24,7 @@ const App: React.FC = () => {
 
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
-    onPanResponderMove: Animated.event(
-      [null, { dy: pan.y }],
-      { useNativeDriver: false }
-    ),
+    onPanResponderMove: Animated.event([null, { dy: pan.y }], { useNativeDriver: false }),
     onPanResponderRelease: () => {
       Animated.spring(pan, {
         toValue: { x: 0, y: 0 },
@@ -64,19 +49,11 @@ const App: React.FC = () => {
   });
   const partInterpolation2 = anim.interpolate({
     inputRange: [0, 0.5, 1],
-    outputRange: [
-      'M 12.5,12.5 12.5005,12.5 12.501,12.5',
-      'M 12.5,12.5 12.5005,12.5 12.501,12.5',
-      'M 3,22 12.5,12.5 22,3',
-    ],
+    outputRange: ['M 12.5,12.5 12.5005,12.5 12.501,12.5', 'M 12.5,12.5 12.5005,12.5 12.501,12.5', 'M 3,22 12.5,12.5 22,3'],
   });
   const partInterpolation3 = anim.interpolate({
     inputRange: [0, 0.5, 1],
-    outputRange: [
-      'M 22,12.5 22.01,12.5',
-      'M 22,22 22.01,22',
-      'M 12.5,12.5 22,22',
-    ],
+    outputRange: ['M 22,12.5 22.01,12.5', 'M 22,22 22.01,22', 'M 12.5,12.5 22,22'],
   });
 
   const sheetInterpolation = anim.interpolate({
@@ -85,11 +62,7 @@ const App: React.FC = () => {
   });
 
   const sheetAnimationStyle = {
-    transform: [
-      {
-        translateX: sheetInterpolation,
-      },
-    ],
+    transform: [{ translateX: sheetInterpolation }],
   };
 
   const updateSearch = (text: string) => {
@@ -98,11 +71,7 @@ const App: React.FC = () => {
 
   return (
     <NavigationContainer>
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior="height"  
-        keyboardVerticalOffset={0} 
-      >
+      <KeyboardAvoidingView style={styles.container} behavior="height" keyboardVerticalOffset={0}>
         <SafeAreaView style={styles.container}>
           <StatusBar barStyle="dark-content" />
 
@@ -120,7 +89,7 @@ const App: React.FC = () => {
 
             <View style={styles.searchBarContainer}>
               <SearchBar
-                placeholder="Search"
+                placeholder="Arama"
                 onChangeText={(text: string) => updateSearch(text)}
                 value={search}
                 containerStyle={styles.searchBar}
@@ -170,7 +139,6 @@ const App: React.FC = () => {
                 blurAmount={6}
                 reducedTransparencyFallbackColor="white"
               />
-
               <SafeAreaView style={styles.menuSheetContainer}>
                 <LinearGradient
                   colors={['#ff9a9e', '#fad0c4', '#fad0c4']}
@@ -180,11 +148,7 @@ const App: React.FC = () => {
                 />
                 <Animated.View
                   {...panResponder.panHandlers}
-                  style={[
-                    styles.menuSheet,
-                    sheetAnimationStyle,
-                    { transform: [{ translateY: pan.y }] },
-                  ]}
+                  style={[styles.menuSheet, sheetAnimationStyle, { transform: [{ translateY: pan.y }] }]}
                 >
                   <LinearGradient
                     colors={['#ff9a9e', '#fad0c4', '#fad0c4']}
@@ -202,53 +166,37 @@ const App: React.FC = () => {
                           marginBottom: height * 0.02,
                         }}
                       />
-                      <Text style={[styles.profileName, { fontSize: width * 0.05 }]}>
-                        Ahmet Onur Evis
-                      </Text>
-                      <Text style={[styles.profileRole, { fontSize: width * 0.035 }]}>
-                        Yönetici
-                      </Text>
+                      <Text style={[styles.profileName, { fontSize: width * 0.05 }]}>Ahmet Onur Evis</Text>
+                      <Text style={[styles.profileRole, { fontSize: width * 0.035 }]}>Yönetici</Text>
 
                       <View style={styles.menuItem}>
                         <Icon name="home" size={24} color="#540a0a" />
-                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>
-                          Anasayfa
-                        </Text>
+                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Anasayfa</Text>
                       </View>
 
                       <View style={styles.menuItem}>
                         <Icon name="inventory" size={24} color="#540a0a" />
-                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>
-                          Ürünlerim
-                        </Text>
+                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Ürünlerim</Text>
                       </View>
 
                       <View style={styles.menuItem}>
                         <Icon name="shopping-cart" size={24} color="#540a0a" />
-                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>
-                          Siparişler
-                        </Text>
+                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Siparişler</Text>
                       </View>
 
                       <View style={styles.menuItem}>
                         <Icon name="notifications" size={24} color="#540a0a" />
-                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>
-                          Bildirimler
-                        </Text>
+                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Bildirimler</Text>
                       </View>
 
                       <View style={styles.menuItem}>
                         <Icon name="support-agent" size={24} color="#540a0a" />
-                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>
-                          Destek
-                        </Text>
+                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Destek</Text>
                       </View>
 
                       <View style={styles.menuItem}>
                         <Icon name="exit-to-app" size={24} color="#540a0a" />
-                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>
-                          Çıkış Yap
-                        </Text>
+                        <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>Çıkış Yap</Text>
                       </View>
 
                       <Pressable onPress={toggleAnimation} style={styles.closeButton}>

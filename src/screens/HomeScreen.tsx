@@ -1,46 +1,110 @@
-import React, { useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Dimensions, Animated } from 'react-native';
+import React, { useRef, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, Animated, ActivityIndicator } from 'react-native';
 import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   stock: number;
 }
 
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
-  
-  const products: Product[] = [
-    { id: 1, name: 'Ürün 1', stock: 5 },
-    { id: 2, name: 'Ürün 2', stock: 0 },
-    { id: 3, name: 'Ürün 3', stock: 15 },
-  ];
+  const [products, setProducts] = useState<Product[]>([]);
+  const [latestProducts, setLatestProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const lowStockProducts = products.filter(product => product.stock < 10 && product.stock > 0).length;
-  const zeroStockProducts = products.filter(product => product.stock == 0).length;
+  // Stok verileri
+  const [totalProducts, setTotalProducts] = useState<number>(0);
+  const [lowStockProducts, setLowStockProducts] = useState<number>(0);
+  const [zeroStockProducts, setZeroStockProducts] = useState<number>(0);
+
+  const cardWidth = screenWidth * 0.75;
+  const cardSpacing = 18;
+  const scrollX = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Tüm ürünler için verileri çek
+    const unsubscribeAllProducts = firestore()
+      .collection('Products')
+      .onSnapshot(snapshot => {
+        if (snapshot && !snapshot.empty) { // snapshot'ın null ya da boş olmadığını kontrol et
+          const productList: Product[] = [];
+          let total = 0;
+          let lowStock = 0;
+          let zeroStock = 0;
+
+          snapshot.forEach(doc => {
+            const { productName, productStock } = doc.data();
+            productList.push({
+              id: doc.id,
+              name: productName,
+              stock: productStock,
+            });
+
+            total += 1;
+            if (productStock < 10 && productStock > 0) lowStock += 1;
+            if (productStock === 0) zeroStock += 1;
+          });
+
+          setProducts(productList);
+          setTotalProducts(total);
+          setLowStockProducts(lowStock);
+          setZeroStockProducts(zeroStock);
+          setLoading(false);
+        } else {
+          console.log('No products found');
+          setLoading(false);
+        }
+      }, error => {
+        console.error("Error fetching products: ", error);
+      });
+
+    // Sadece son 3 ürünü almak için
+    const unsubscribeLatestProducts = firestore()
+      .collection('Products')
+      .orderBy(firestore.FieldPath.documentId(), 'desc')
+      .limit(3)
+      .onSnapshot(snapshot => {
+        if (snapshot && !snapshot.empty) { // snapshot'ın null ya da boş olmadığını kontrol et
+          const latestProductList: Product[] = [];
+          snapshot.forEach(doc => {
+            const { productName, productStock } = doc.data();
+            latestProductList.push({
+              id: doc.id,
+              name: productName,
+              stock: productStock,
+            });
+          });
+          setLatestProducts(latestProductList);
+        } else {
+          console.log('No latest products found');
+        }
+      });
+
+    return () => {
+      unsubscribeAllProducts();
+      unsubscribeLatestProducts();
+    };
+  }, []);
 
   const summaryCards = [
-    { title: 'Toplam Ürünler', value: products.length, backgroundColor: '#007bff' },  
-    { title: 'Düşük Stokta Olanlar', value: lowStockProducts, backgroundColor: '#ffc107' },  
-    { title: 'Stokta Olmayanlar', value: zeroStockProducts, backgroundColor: '#dc3545' },  
+    { title: 'Toplam Ürünler', value: totalProducts, backgroundColor: '#007bff' },
+    { title: 'Düşük Stokta Olanlar', value: lowStockProducts, backgroundColor: '#ffc107' },
+    { title: 'Stokta Olmayanlar', value: zeroStockProducts, backgroundColor: '#dc3545' },
   ];
-
-  const cardWidth = screenWidth * 0.85;  
-  const cardSpacing = 18;  
-
-  const scrollX = useRef(new Animated.Value(0)).current;
 
   return (
     <View style={styles.container}>
-      
+      {/* Stok Bilgisi Kartları */}
       <Animated.ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.summaryContainer}
-        snapToInterval={cardWidth + cardSpacing} 
+        snapToInterval={cardWidth + cardSpacing}
         decelerationRate="fast"
         scrollEventThrottle={16}
         pagingEnabled
@@ -58,28 +122,22 @@ const HomeScreen: React.FC = () => {
 
           const scale = scrollX.interpolate({
             inputRange,
-            outputRange: [0.9, 1, 0.9], // Ortadaki kart büyük olur
+            outputRange: [0.9, 1, 0.9],
             extrapolate: 'clamp',
           });
 
           return (
             <Animated.View
               key={index}
-              style={[
-                styles.card,
-                { backgroundColor: card.backgroundColor, width: cardWidth, transform: [{ scale }] },
-              ]}
-            >
+              style={[styles.card, { backgroundColor: card.backgroundColor, width: cardWidth, transform: [{ scale }] }]}>
               <Text style={styles.cardTitle}>{card.title}</Text>
               <Text style={styles.cardValue}>{card.value}</Text>
-
-              
-              {/* <Image source={require('./path-to-your-image.jpg')} style={styles.cardImage} /> */}
             </Animated.View>
           );
         })}
       </Animated.ScrollView>
 
+      {/* Hızlı Eylemler */}
       <View style={styles.quickActions}>
         <TouchableOpacity
           style={styles.button}
@@ -96,17 +154,26 @@ const HomeScreen: React.FC = () => {
       </View>
 
       <Text style={styles.sectionTitle}>Son Eklenen Ürünler</Text>
-      <FlatList
-        data={products}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.productItem}>
-            <Text>{item.name}</Text>
-            <Text>{item.stock > 0 ? `Stok: ${item.stock}` : 'Stokta Yok!'}</Text>
-          </View>
-        )}
-        contentContainerStyle={{ paddingBottom: 120 }}
-      />
+
+      {/* Son Eklenen Ürünler Listesi */}
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007bff" />
+          <Text>Yükleniyor...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={latestProducts}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.productItem}>
+              <Text>{item.name}</Text>
+              <Text>{item.stock > 0 ? `Stok: ${item.stock}` : 'Stokta Yok!'}</Text>
+            </View>
+          )}
+          contentContainerStyle={{ paddingBottom: 120 }}
+        />
+      )}
     </View>
   );
 };
@@ -123,6 +190,7 @@ const styles = StyleSheet.create({
   },
   card: {
     height: 130,
+    width: screenWidth * 0.75,
     padding: 20,
     borderRadius: 8,
     alignItems: 'center',
@@ -138,7 +206,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#000000',
     fontWeight: 'bold',
-    marginBottom: 8,    
+    marginBottom: 8,
   },
   cardValue: {
     fontSize: 24,
@@ -179,11 +247,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-  cardImage: {
-    width: '100%',
-    height: 100,
-    borderRadius: 8,
-    marginBottom: 10,
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "506291490192",
+    "project_id": "depoyonetimi-d70f7",
+    "storage_bucket": "depoyonetimi-d70f7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:506291490192:android:e262395bf7e84d58feb715",
+        "android_client_info": {
+          "package_name": "com.depoyonetimi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOxCwmae35-2-CS6O-4ZS49ALIgnS9Qaw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
