@@ -23,7 +23,7 @@ const HomeScreen: React.FC = () => {
   const [lowStockProducts, setLowStockProducts] = useState<number>(0);
   const [zeroStockProducts, setZeroStockProducts] = useState<number>(0);
 
-  const cardWidth = screenWidth * 0.75;
+  const cardWidth = screenWidth * 0.70;
   const cardSpacing = 18;
   const scrollX = useRef(new Animated.Value(0)).current;
 
@@ -58,11 +58,11 @@ const HomeScreen: React.FC = () => {
           setZeroStockProducts(zeroStock);
           setLoading(false);
         } else {
-          console.log('No products found');
+          console.log('Ürün Bulunamadı');
           setLoading(false);
         }
       }, error => {
-        console.error("Error fetching products: ", error);
+        console.error("Ürünler Getirilirken Hata Oluştu.!! ", error);
       });
 
     
@@ -84,7 +84,7 @@ const HomeScreen: React.FC = () => {
           });
           setLatestProducts(latestProductList);
         } else {
-          console.log('No latest products found');
+          console.log('Son Ürünler Bulunamadı!!!');
         }
       });
 
@@ -140,7 +140,7 @@ const HomeScreen: React.FC = () => {
         })}
       </Animated.ScrollView>
 
-      {/* Hızlı Eylemler */}
+      
       <View style={styles.quickActions}>
         <TouchableOpacity
           style={styles.button}
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   },
   summaryContainer: {
     flexDirection: 'row',
-    marginBottom: 20,
+    marginBottom: 5,
   },
   card: {
     height: 130,

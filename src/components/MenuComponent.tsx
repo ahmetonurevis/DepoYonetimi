@@ -18,8 +18,10 @@ const MenuComponent: React.FC<MenuProps> = ({ open, toggleAnimation, panResponde
   if (!open) return null;
 
   return (
-    <>
-      <BlurView style={StyleSheet.absoluteFill} blurType="dark" blurAmount={6} reducedTransparencyFallbackColor="white" />
+    <View style={styles.container}>
+      <Pressable style={StyleSheet.absoluteFill} onPress={toggleAnimation}>
+        <BlurView style={StyleSheet.absoluteFill} blurType="dark" blurAmount={6} reducedTransparencyFallbackColor="white" />
+      </Pressable>
       <View style={styles.menuSheetContainer}>
         <LinearGradient
           colors={['#ff9a9e', '#fad0c4', '#fad0c4']}
@@ -56,7 +58,7 @@ const MenuComponent: React.FC<MenuProps> = ({ open, toggleAnimation, panResponde
           </LinearGradient>
         </Animated.View>
       </View>
-    </>
+    </View>
   );
 };
 
@@ -80,8 +82,16 @@ const getIconName = (menuItem: string) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    position: 'absolute', // container'ın konumunu sabit tutmak için
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
   menuSheetContainer: {
-    position: 'absolute',
+    position: 'absolute', // Menüyü tam ekran yapmaya devam ediyoruz
     height: '100%',
     width: '80%',
     backgroundColor: 'transparent',
