@@ -9,6 +9,7 @@ interface Product {
   id: string;
   name: string;
   stock: number;
+  createdAt: firebase.firestore.Timestamp | null;  
 }
 
 const HomeScreen: React.FC = () => {
@@ -27,22 +28,23 @@ const HomeScreen: React.FC = () => {
   const scrollX = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Tüm ürünler için verileri çek
+    
     const unsubscribeAllProducts = firestore()
       .collection('Products')
       .onSnapshot(snapshot => {
-        if (snapshot && !snapshot.empty) { // snapshot'ın null ya da boş olmadığını kontrol et
+        if (snapshot && !snapshot.empty) { 
           const productList: Product[] = [];
           let total = 0;
           let lowStock = 0;
           let zeroStock = 0;
 
           snapshot.forEach(doc => {
-            const { productName, productStock } = doc.data();
+            const { productName, productStock, createdAt } = doc.data();
             productList.push({
               id: doc.id,
               name: productName,
               stock: productStock,
+              createdAt: createdAt || null, 
             });
 
             total += 1;
@@ -63,20 +65,21 @@ const HomeScreen: React.FC = () => {
         console.error("Error fetching products: ", error);
       });
 
-    // Sadece son 3 ürünü almak için
+    
     const unsubscribeLatestProducts = firestore()
       .collection('Products')
-      .orderBy(firestore.FieldPath.documentId(), 'desc')
+      .orderBy('createdAt', 'asc')  
       .limit(3)
       .onSnapshot(snapshot => {
-        if (snapshot && !snapshot.empty) { // snapshot'ın null ya da boş olmadığını kontrol et
+        if (snapshot && !snapshot.empty) {
           const latestProductList: Product[] = [];
           snapshot.forEach(doc => {
-            const { productName, productStock } = doc.data();
+            const { productName, productStock, createdAt } = doc.data();
             latestProductList.push({
               id: doc.id,
               name: productName,
               stock: productStock,
+              createdAt: createdAt || null,  // Zaman damgasını al
             });
           });
           setLatestProducts(latestProductList);
