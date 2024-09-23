@@ -158,7 +158,7 @@ const HomeScreen: React.FC = () => {
 
       <Text style={styles.sectionTitle}>Son Eklenen Ürünler</Text>
 
-      {/* Son Eklenen Ürünler Listesi */}
+      
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#007bff" />
@@ -238,12 +238,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontWeight: 'bold',
   },
+  
   productItem: {
     marginVertical: 8,
     marginHorizontal: 5,
     padding: 20,
     borderRadius: 8,
-    backgroundColor: '#000000',
+    backgroundColor: '#f9f9f9',
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

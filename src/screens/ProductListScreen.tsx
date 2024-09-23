@@ -95,7 +95,7 @@ const ProductListScreen: React.FC = () => {
           <View style={styles.productItem}>
             <Text style={styles.productName}>{item.name}</Text>
             <Text style={styles.productStock}>
-              Stok: {item.stock > 0 ? item.stock : 'Stokta Yok'}
+              Stok: {item.stock > 0 ? item.stock : 'Yok'}
             </Text>
             <TouchableOpacity style={styles.editButton} onPress={() => openModal(item)}>
               <Text style={styles.editButtonText}>Düzenle</Text>
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   },
   productItem: {
     padding: 16,
-    backgroundColor: '#000000',
+    backgroundColor: '#f1f1f1',
     borderRadius: 8,
     marginBottom: 10,
     flexDirection: 'row',
@@ -152,10 +152,13 @@ const styles = StyleSheet.create({
   productName: {
     fontSize: 18,
     fontWeight: 'bold',
+    color:'#000000',
   },
   productStock: {
     fontSize: 16,
-    color: '#666',
+    color: '#000000',
+    fontWeight: 'bold',
+    
   },
   editButton: {
     backgroundColor: '#007bff',

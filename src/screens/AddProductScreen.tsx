@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import { color } from 'react-native-elements/dist/helpers';
 
 const AddProductScreen: React.FC = () => {
   const [productName, setProductName] = useState<string>('');
@@ -79,6 +80,9 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
   },
+  TextInput: {
+    color: '#000000',
+  },
   button: {
     backgroundColor: '#007bff',
     padding: 12,
@@ -86,7 +90,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#000000',
+    color: '#fff',
     fontSize: 16,
   },
 });
