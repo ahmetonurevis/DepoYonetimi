@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { Animated, Dimensions, Easing, PanResponder, KeyboardAvoidingView, SafeAreaView, StatusBar, StyleSheet } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { Animated, Dimensions, Easing, PanResponder, KeyboardAvoidingView, SafeAreaView, StatusBar, StyleSheet, BackHandler, Alert, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import HeaderComponent from './src/components/HeaderComponent';
 import MenuComponent from './src/components/MenuComponent';
@@ -49,6 +49,24 @@ const App: React.FC = () => {
     setSearch(text);
   };
 
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert('Bekleyin!', 'Çıkmak istediğinize emin misiniz?', [
+        {
+          text: 'Vazgeç',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        { text: 'EVET', onPress: () => BackHandler.exitApp() },
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, []);
+
   return (
     <NavigationContainer>
       <KeyboardAvoidingView style={styles.container} behavior="height" keyboardVerticalOffset={0}>
@@ -63,6 +81,7 @@ const App: React.FC = () => {
             pan={pan}
             sheetAnimationStyle={sheetAnimationStyle}
           />
+          
         </SafeAreaView>
       </KeyboardAvoidingView>
     </NavigationContainer>
@@ -73,6 +92,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  backAlertContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
