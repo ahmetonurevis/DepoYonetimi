@@ -23,7 +23,7 @@ const HomeScreen: React.FC = () => {
   const [lowStockProducts, setLowStockProducts] = useState<number>(0);
   const [zeroStockProducts, setZeroStockProducts] = useState<number>(0);
 
-  const cardWidth = screenWidth * 0.70;
+  const cardWidth = screenWidth * 0.75;
   const cardSpacing = 18;
   const scrollX = useRef(new Animated.Value(0)).current;
 
@@ -93,53 +93,54 @@ const HomeScreen: React.FC = () => {
   }, []);
 
   const summaryCards = [
-    { title: 'Toplam Ürünler', value: totalProducts, backgroundColor: '#007bff', icon: 'inventory' },
-    { title: 'Düşük Stokta Olanlar', value: lowStockProducts, backgroundColor: '#ffc107', icon: 'warning' },
-    { title: 'Stokta Olmayanlar', value: zeroStockProducts, backgroundColor: '#dc3545', icon: 'do-not-disturb' },
+    { title: 'Toplam Ürünler', value: totalProducts, backgroundColor: '#4A90E2', icon: 'inventory' },
+    { title: 'Düşük Stokta Olanlar', value: lowStockProducts, backgroundColor: '#F5A623', icon: 'warning' },
+    { title: 'Stokta Olmayanlar', value: zeroStockProducts, backgroundColor: '#E94E77', icon: 'do-not-disturb' },
   ];
 
   return (
     <KeyboardAvoidingView>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
         <View style={styles.container}>
-          <Animated.ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.summaryContainer}
-            snapToInterval={cardWidth + cardSpacing}
-            decelerationRate="fast"
-            scrollEventThrottle={16}
-            pagingEnabled
-            onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-              { useNativeDriver: true }
-            )}
-          >
-            {summaryCards.map((card, index) => {
-              const inputRange = [
-                (index - 1) * (cardWidth + cardSpacing),
-                index * (cardWidth + cardSpacing),
-                (index + 1) * (cardWidth + cardSpacing),
-              ];
+          <View style={styles.summaryContainer}>
+            <Animated.ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              snapToInterval={cardWidth + cardSpacing}
+              decelerationRate="fast"
+              scrollEventThrottle={16}
+              pagingEnabled
+              onScroll={Animated.event(
+                [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                { useNativeDriver: true }
+              )}
+            >
+              {summaryCards.map((card, index) => {
+                const inputRange = [
+                  (index - 1) * (cardWidth + cardSpacing),
+                  index * (cardWidth + cardSpacing),
+                  (index + 1) * (cardWidth + cardSpacing),
+                ];
 
-              const scale = scrollX.interpolate({
-                inputRange,
-                outputRange: [0.9, 1, 0.9],
-                extrapolate: 'clamp',
-              });
+                const scale = scrollX.interpolate({
+                  inputRange,
+                  outputRange: [0.9, 1, 0.9],
+                  extrapolate: 'clamp',
+                });
 
-              return (
-                <Animated.View
-                  key={index}
-                  style={[styles.card, { backgroundColor: card.backgroundColor, width: cardWidth, transform: [{ scale }] }]}
-                >
-                  <Icon name={card.icon} size={30} color="#fff" />
-                  <Text style={styles.cardTitle}>{card.title}</Text>
-                  <Text style={styles.cardValue}>{card.value}</Text>
-                </Animated.View>
-              );
-            })}
-          </Animated.ScrollView>
+                return (
+                  <Animated.View
+                    key={index}
+                    style={[styles.card, { backgroundColor: card.backgroundColor, width: cardWidth, transform: [{ scale }] }]}
+                  >
+                    <Icon name={card.icon} size={40} color="#fff" />
+                    <Text style={styles.cardTitle}>{card.title}</Text>
+                    <Text style={styles.cardValue}>{card.value}</Text>
+                  </Animated.View>
+                );
+              })}
+            </Animated.ScrollView>
+          </View>
 
           <View style={styles.quickActions}>
             <TouchableOpacity
@@ -162,7 +163,7 @@ const HomeScreen: React.FC = () => {
 
           {loading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#007bff" />
+              <ActivityIndicator size="large" color="#4A90E2" />
               <Text>Yükleniyor...</Text>
             </View>
           ) : (
@@ -188,48 +189,49 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f4f6f9',
+    backgroundColor: '#f7f9fc',
   },
   summaryContainer: {
     flexDirection: 'row',
-    marginBottom: 10,
+    justifyContent: 'center', // Kartları ortalamak için eklendi
+    marginBottom: 20,
   },
   card: {
-    height: 130,
+    height: 150,
     width: screenWidth * 0.75,
-    padding: 20,
-    borderRadius: 20,
+    padding: 25,
+    borderRadius: 25,
     alignItems: 'center',
     marginHorizontal: 10,
     justifyContent: 'center',
-    elevation: 5,
+    elevation: 6,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 7,
   },
   cardTitle: {
-    fontSize: 16,
-    color: '#000',
-    fontWeight: 'bold',
-    marginBottom: 8,
+    fontSize: 18,
+    color: '#fff',
+    fontWeight: '600',
+    marginTop: 10,
   },
   cardValue: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#000',
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#fff',
   },
   quickActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 25,
   },
   button: {
     flex: 1,
-    backgroundColor: '#007bff',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    backgroundColor: '#4A90E2',
+    paddingVertical: 14,
+    paddingHorizontal: 22,
+    borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -240,28 +242,29 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     marginLeft: 10,
+    fontWeight: '600',
   },
   sectionTitle: {
-    fontSize: 18,
-    marginBottom: 8,
-    fontWeight: 'bold',
+    fontSize: 20,
+    marginBottom: 15,
+    fontWeight: '700',
     color: '#333',
   },
   productItem: {
-    marginVertical: 8,
-    marginHorizontal: 5,
+    marginVertical: 10,
+    marginHorizontal: 8,
     padding: 20,
-    borderRadius: 10,
+    borderRadius: 12,
     backgroundColor: '#fff',
     elevation: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.18,
+    shadowRadius: 6,
   },
   productName: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: '#333',
   },
   productStock: {
