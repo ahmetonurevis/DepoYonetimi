@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Modal, TextInput, Button, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import Icon from 'react-native-vector-icons/MaterialIcons'; // Modern ikonlar için
 
 interface Product {
   id: string;
@@ -57,7 +58,7 @@ const ProductListScreen: React.FC = () => {
         productStock: stockNumber
       });
 
-      // Güncellenen ürünün state'e eklenmesi
+      
       setProducts(prevProducts => prevProducts.map(product =>
         product.id === selectedProduct.id ? { ...product, stock: stockNumber } : product
       ));
@@ -92,20 +93,28 @@ const ProductListScreen: React.FC = () => {
         data={products}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={styles.productItem}>
-            <Text style={styles.productName}>{item.name}</Text>
-            <Text style={styles.productStock}>
-              Stok: {item.stock > 0 ? item.stock : 'Yok'}
-            </Text>
+          <View style={[styles.productItem, item.stock === 0 ? styles.outOfStock : styles.inStock]}>
+            <View style={styles.productInfo}>
+              <Text style={styles.productName}>{item.name}</Text>
+              <View style={styles.stockInfo}>
+                <Icon
+                  name={item.stock === 0 ? "error-outline" : "check-circle-outline"}
+                  size={20}
+                  color={item.stock === 0 ? "#dc3545" : "#28a745"}
+                />
+                <Text style={[styles.productStock, { color: item.stock === 0 ? "#dc3545" : "#28a745" }]}>
+                  {item.stock > 0 ? `${item.stock} adet` : 'Stokta Yok'}
+                </Text>
+              </View>
+            </View>
             <TouchableOpacity style={styles.editButton} onPress={() => openModal(item)}>
               <Text style={styles.editButtonText}>Düzenle</Text>
             </TouchableOpacity>
           </View>
         )}
-        contentContainerStyle={{ paddingBottom: 100 }} 
+        contentContainerStyle={{ paddingBottom: 100 }}
       />
 
-      
       {selectedProduct && (
         <Modal
           animationType="slide"
@@ -116,7 +125,7 @@ const ProductListScreen: React.FC = () => {
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Stok Düzenle</Text>
-              <Text>Ürün: {selectedProduct.name}</Text>
+              <Text style={styles.modalProductName}>{selectedProduct.name}</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Yeni stok miktarı"
@@ -124,8 +133,14 @@ const ProductListScreen: React.FC = () => {
                 onChangeText={setNewStock}
                 keyboardType="numeric"
               />
-              <Button title="Güncelle" onPress={handleUpdateStock} />
-              <Button title="İptal" color="red" onPress={() => setModalVisible(false)} />
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity style={[styles.modalButton, styles.updateButton]} onPress={handleUpdateStock}>
+                  <Text style={styles.modalButtonText}>Güncelle</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modalButton, styles.cancelButton]} onPress={() => setModalVisible(false)}>
+                  <Text style={styles.modalButtonText}>İptal</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </Modal>
@@ -138,36 +153,59 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#f0f4f8',
   },
   productItem: {
     padding: 16,
-    backgroundColor: '#f1f1f1',
-    borderRadius: 8,
-    marginBottom: 10,
+    borderRadius: 12,
+    marginBottom: 15,
+    backgroundColor: '#fff',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 5,
+    elevation: 4,
+  },
+  inStock: {
+    borderLeftColor: '#28a745',
+    borderLeftWidth: 6,
+  },
+  outOfStock: {
+    borderLeftColor: '#dc3545',
+    borderLeftWidth: 6,
+  },
+  productInfo: {
+    flexDirection: 'column',
+  },
+  stockInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
   },
   productName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color:'#000000',
+    color: '#333',
   },
   productStock: {
     fontSize: 16,
-    color: '#000000',
-    fontWeight: 'bold',
-    
+    marginLeft: 6,
+    fontWeight: '600',
   },
   editButton: {
     backgroundColor: '#007bff',
-    padding: 8,
-    borderRadius: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    elevation: 2,
   },
   editButtonText: {
     color: '#fff',
     fontSize: 14,
+    fontWeight: '600',
   },
   loadingContainer: {
     flex: 1,
@@ -184,21 +222,52 @@ const styles = StyleSheet.create({
     width: '80%',
     padding: 20,
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 15,
     alignItems: 'center',
+    elevation: 5,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
+    marginBottom: 15,
+    color: '#333',
+  },
+  modalProductName: {
+    fontSize: 18,
     marginBottom: 10,
+    color: '#555',
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 10,
     width: '100%',
     marginBottom: 16,
+    backgroundColor: '#f9f9f9',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalButton: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 10,
+    marginHorizontal: 5,
+  },
+  updateButton: {
+    backgroundColor: '#28a745',
+  },
+  cancelButton: {
+    backgroundColor: '#dc3545',
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
 });
 

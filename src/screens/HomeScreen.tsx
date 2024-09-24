@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, Animated, ActivityIndicator } from 'react-native';
 import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
+import { Icon } from 'react-native-elements';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -92,9 +93,9 @@ const HomeScreen: React.FC = () => {
   }, []);
 
   const summaryCards = [
-    { title: 'Toplam Ürünler', value: totalProducts, backgroundColor: '#007bff' },
-    { title: 'Düşük Stokta Olanlar', value: lowStockProducts, backgroundColor: '#ffc107' },
-    { title: 'Stokta Olmayanlar', value: zeroStockProducts, backgroundColor: '#dc3545' },
+    { title: 'Toplam Ürünler', value: totalProducts, backgroundColor: '#007bff', icon:'inventory' },
+    { title: 'Düşük Stokta Olanlar', value: lowStockProducts, backgroundColor: '#ffc107', icon:'warning' },
+    { title: 'Stokta Olmayanlar', value: zeroStockProducts, backgroundColor: '#dc3545', icon:'do-not-disturb' },
   ];
 
   return (
@@ -130,6 +131,7 @@ const HomeScreen: React.FC = () => {
               key={index}
               style={[styles.card, { backgroundColor: card.backgroundColor, width: cardWidth, transform: [{ scale }] }]}
             >
+              <Icon name={card.icon} size={30} color="#fff" />
               <Text style={styles.cardTitle}>{card.title}</Text>
               <Text style={styles.cardValue}>{card.value}</Text>
             </Animated.View>
