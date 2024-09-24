@@ -9,7 +9,7 @@ interface Product {
   id: string;
   name: string;
   stock: number;
-  createdAt: firebase.firestore.Timestamp | null;  
+  createdAt: firebase.firestore.Timestamp | null;
 }
 
 const HomeScreen: React.FC = () => {
@@ -18,7 +18,6 @@ const HomeScreen: React.FC = () => {
   const [latestProducts, setLatestProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  
   const [totalProducts, setTotalProducts] = useState<number>(0);
   const [lowStockProducts, setLowStockProducts] = useState<number>(0);
   const [zeroStockProducts, setZeroStockProducts] = useState<number>(0);
@@ -28,11 +27,10 @@ const HomeScreen: React.FC = () => {
   const scrollX = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    
     const unsubscribeAllProducts = firestore()
       .collection('Products')
       .onSnapshot(snapshot => {
-        if (snapshot && !snapshot.empty) { 
+        if (snapshot && !snapshot.empty) {
           const productList: Product[] = [];
           let total = 0;
           let lowStock = 0;
@@ -44,7 +42,7 @@ const HomeScreen: React.FC = () => {
               id: doc.id,
               name: productName,
               stock: productStock,
-              createdAt: createdAt || null, 
+              createdAt: createdAt || null,
             });
 
             total += 1;
@@ -65,10 +63,9 @@ const HomeScreen: React.FC = () => {
         console.error("Ürünler Getirilirken Hata Oluştu.!! ", error);
       });
 
-    
     const unsubscribeLatestProducts = firestore()
       .collection('Products')
-      .orderBy('createdAt', 'asc')  
+      .orderBy('createdAt', 'asc')
       .limit(3)
       .onSnapshot(snapshot => {
         if (snapshot && !snapshot.empty) {
@@ -79,7 +76,7 @@ const HomeScreen: React.FC = () => {
               id: doc.id,
               name: productName,
               stock: productStock,
-              createdAt: createdAt || null,  
+              createdAt: createdAt || null,
             });
           });
           setLatestProducts(latestProductList);
@@ -102,7 +99,6 @@ const HomeScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      
       <Animated.ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -132,7 +128,8 @@ const HomeScreen: React.FC = () => {
           return (
             <Animated.View
               key={index}
-              style={[styles.card, { backgroundColor: card.backgroundColor, width: cardWidth, transform: [{ scale }] }]}>
+              style={[styles.card, { backgroundColor: card.backgroundColor, width: cardWidth, transform: [{ scale }] }]}
+            >
               <Text style={styles.cardTitle}>{card.title}</Text>
               <Text style={styles.cardValue}>{card.value}</Text>
             </Animated.View>
@@ -140,7 +137,7 @@ const HomeScreen: React.FC = () => {
         })}
       </Animated.ScrollView>
 
-      
+
       <View style={styles.quickActions}>
         <TouchableOpacity
           style={styles.button}
@@ -158,7 +155,6 @@ const HomeScreen: React.FC = () => {
 
       <Text style={styles.sectionTitle}>Son Eklenen Ürünler</Text>
 
-      
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#007bff" />
@@ -170,8 +166,8 @@ const HomeScreen: React.FC = () => {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.productItem}>
-              <Text>{item.name}</Text>
-              <Text>{item.stock > 0 ? `Stok: ${item.stock}` : 'Stokta Yok!'}</Text>
+              <Text style={styles.productName}>{item.name}</Text>
+              <Text style={styles.productStock}>{item.stock > 0 ? `Stok: ${item.stock}` : 'Stokta Yok!'}</Text>
             </View>
           )}
           contentContainerStyle={{ paddingBottom: 120 }}
@@ -186,6 +182,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
+    justifyContent: 'center',
   },
   summaryContainer: {
     flexDirection: 'row',
@@ -238,18 +235,26 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontWeight: 'bold',
   },
-  
   productItem: {
     marginVertical: 8,
     marginHorizontal: 5,
     padding: 20,
     borderRadius: 8,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#f1f1f1', 
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+  },
+  productName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000', 
+  },
+  productStock: {
+    fontSize: 14,
+    color: '#000', 
   },
   loadingContainer: {
     flex: 1,

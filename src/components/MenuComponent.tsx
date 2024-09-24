@@ -84,14 +84,14 @@ const getIconName = (menuItem: string) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    position: 'absolute', // container'ın konumunu sabit tutmak için
+    position: 'absolute', 
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
   },
   menuSheetContainer: {
-    position: 'absolute', // Menüyü tam ekran yapmaya devam ediyoruz
+    position: 'absolute', 
     height: '100%',
     width: '80%',
     backgroundColor: 'transparent',
