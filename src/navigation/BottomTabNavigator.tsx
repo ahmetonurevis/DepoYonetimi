@@ -68,10 +68,10 @@ const BottomTabNavigator: React.FC = () => {
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
-      setKeyboardVisible(true); // Klavye açıldığında tab bar'ı gizle
+      setKeyboardVisible(true); 
     });
     const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      setKeyboardVisible(false); // Klavye kapandığında tab bar'ı geri getir
+      setKeyboardVisible(false); 
     });
 
     return () => {
@@ -94,7 +94,7 @@ const BottomTabNavigator: React.FC = () => {
           backgroundColor: '#ffffff',
           borderRadius: 15,
           height: 90,
-          display: isKeyboardVisible ? 'none' : 'flex', // Klavye açıldığında tab bar'ı gizleme
+          display: isKeyboardVisible ? 'none' : 'flex', 
           ...styles.shadow,
         },
       }}

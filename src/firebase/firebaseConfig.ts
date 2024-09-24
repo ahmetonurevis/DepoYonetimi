@@ -1,4 +1,3 @@
-// src/config/firebaseConfig.ts
 import firebase from '@react-native-firebase/app';
 import '@react-native-firebase/firestore';
 
@@ -14,7 +13,7 @@ const firebaseConfig = {
 
 export const initializeFirebase = () => {
   if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig); // Firebase'i başlat
+    firebase.initializeApp(firebaseConfig); 
     console.log('Firebase initialized successfully!');
   } else {
     console.log('Firebase already initialized!');
