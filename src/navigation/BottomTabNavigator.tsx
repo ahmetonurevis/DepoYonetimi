@@ -1,6 +1,6 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, GestureResponderEvent } from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
+import React, { useEffect, useState } from 'react';
+import { Keyboard, StyleSheet, Text, View, Image, TouchableOpacity, GestureResponderEvent } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/HomeScreen';
 import SettingsScreen from '../screens/SettingsScreen';
@@ -15,7 +15,7 @@ const Stack = createStackNavigator();
 
 interface CustomTabBarButtonProps {
   children: React.ReactNode;
-  onPress?: (event: GestureResponderEvent) => void; 
+  onPress?: (event: GestureResponderEvent) => void;
 }
 
 const CustomTabBarButton: React.FC<CustomTabBarButtonProps> = ({ children, onPress }) => (
@@ -41,30 +41,45 @@ const CustomTabBarButton: React.FC<CustomTabBarButtonProps> = ({ children, onPre
   </TouchableOpacity>
 );
 
-
 const HomeStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen 
-        name="HomeScreen" 
-        component={HomeScreen} 
-        options={{ headerShown: false }} 
+      <Stack.Screen
+        name="HomeScreen"
+        component={HomeScreen}
+        options={{ headerShown: false }}
       />
-      <Stack.Screen 
-        name="AddProductScreen" 
-        component={AddProductScreen} 
-        options={{ title: 'Ürün Ekle' }} 
+      <Stack.Screen
+        name="AddProductScreen"
+        component={AddProductScreen}
+        options={{ title: 'Ürün Ekle' }}
       />
-      <Stack.Screen 
-        name="ProductListScreen" 
-        component={ProductListScreen} 
-        options={{ title: 'Ürün Listesi' }} 
+      <Stack.Screen
+        name="ProductListScreen"
+        component={ProductListScreen}
+        options={{ title: 'Ürün Listesi' }}
       />
     </Stack.Navigator>
   );
 };
 
 const BottomTabNavigator: React.FC = () => {
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardVisible(true); // Klavye açıldığında tab bar'ı gizle
+    });
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardVisible(false); // Klavye kapandığında tab bar'ı geri getir
+    });
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -79,6 +94,7 @@ const BottomTabNavigator: React.FC = () => {
           backgroundColor: '#ffffff',
           borderRadius: 15,
           height: 90,
+          display: isKeyboardVisible ? 'none' : 'flex', // Klavye açıldığında tab bar'ı gizleme
           ...styles.shadow,
         },
       }}
@@ -131,7 +147,7 @@ const BottomTabNavigator: React.FC = () => {
 
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}  
+        component={ProfileScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <Image

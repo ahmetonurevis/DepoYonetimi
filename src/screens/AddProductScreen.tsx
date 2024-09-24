@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import { color } from 'react-native-elements/dist/helpers';
+import LinearGradient from 'react-native-linear-gradient'; 
+import { Icon } from 'react-native-elements'; 
 
 const AddProductScreen: React.FC = () => {
   const [productName, setProductName] = useState<string>('');
@@ -20,11 +21,10 @@ const AddProductScreen: React.FC = () => {
     }
 
     try {
-      
       await firestore().collection('Products').add({
         productName,
         productStock: stockNumber,
-        createdAt: firestore.FieldValue.serverTimestamp(), 
+        createdAt: firestore.FieldValue.serverTimestamp(),
       });
 
       Alert.alert('Başarılı', `Ürün eklendi: ${productName}, Stok: ${stockNumber}`);
@@ -39,23 +39,36 @@ const AddProductScreen: React.FC = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Yeni Ürün Ekle</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Ürün Adı"
-        value={productName}
-        onChangeText={setProductName}
-      />
+      <View style={styles.inputContainer}>
+        <Icon name="box" type="feather" color="#007bff" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Ürün Adı"
+          value={productName}
+          onChangeText={setProductName}
+          placeholderTextColor="#aaa"
+        />
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Stok Miktarı"
-        value={productStock}
-        onChangeText={setProductStock}
-        keyboardType="numeric"
-      />
+      <View style={styles.inputContainer}>
+        <Icon name="layers" type="feather" color="#007bff" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Stok Miktarı"
+          value={productStock}
+          onChangeText={setProductStock}
+          keyboardType="numeric"
+          placeholderTextColor="#aaa"
+        />
+      </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleAddProduct}>
-        <Text style={styles.buttonText}>Kaydet</Text>
+      <TouchableOpacity onPress={handleAddProduct}>
+        <LinearGradient
+          colors={['#6dd5ed', '#2193b0']} 
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Kaydet</Text>
+        </LinearGradient>
       </TouchableOpacity>
     </View>
   );
@@ -64,34 +77,52 @@ const AddProductScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
+    padding: 16, 
+    backgroundColor: '#f0f4f8',
   },
   title: {
-    fontSize: 24,
+    fontSize: 26, 
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 16, 
     textAlign: 'center',
+    color: '#333',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12, 
+    marginBottom: 12, 
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+    paddingLeft: 8, 
   },
-  TextInput: {
-    color: '#000000',
+  icon: {
+    marginRight: 8, 
   },
   button: {
-    backgroundColor: '#007bff',
-    padding: 12,
-    borderRadius: 8,
+    paddingVertical: 12, 
+    borderRadius: 12,
     alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 16, 
+    fontWeight: 'bold',
   },
 });
 

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, Animated, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, Animated, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import { Icon } from 'react-native-elements';
@@ -93,90 +93,94 @@ const HomeScreen: React.FC = () => {
   }, []);
 
   const summaryCards = [
-    { title: 'Toplam Ürünler', value: totalProducts, backgroundColor: '#007bff', icon:'inventory' },
-    { title: 'Düşük Stokta Olanlar', value: lowStockProducts, backgroundColor: '#ffc107', icon:'warning' },
-    { title: 'Stokta Olmayanlar', value: zeroStockProducts, backgroundColor: '#dc3545', icon:'do-not-disturb' },
+    { title: 'Toplam Ürünler', value: totalProducts, backgroundColor: '#007bff', icon: 'inventory' },
+    { title: 'Düşük Stokta Olanlar', value: lowStockProducts, backgroundColor: '#ffc107', icon: 'warning' },
+    { title: 'Stokta Olmayanlar', value: zeroStockProducts, backgroundColor: '#dc3545', icon: 'do-not-disturb' },
   ];
 
   return (
-    <View style={styles.container}>
-      <Animated.ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.summaryContainer}
-        snapToInterval={cardWidth + cardSpacing}
-        decelerationRate="fast"
-        scrollEventThrottle={16}
-        pagingEnabled
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: true }
-        )}
-      >
-        {summaryCards.map((card, index) => {
-          const inputRange = [
-            (index - 1) * (cardWidth + cardSpacing),
-            index * (cardWidth + cardSpacing),
-            (index + 1) * (cardWidth + cardSpacing),
-          ];
+    <KeyboardAvoidingView>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+        <View style={styles.container}>
+          <Animated.ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.summaryContainer}
+            snapToInterval={cardWidth + cardSpacing}
+            decelerationRate="fast"
+            scrollEventThrottle={16}
+            pagingEnabled
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+              { useNativeDriver: true }
+            )}
+          >
+            {summaryCards.map((card, index) => {
+              const inputRange = [
+                (index - 1) * (cardWidth + cardSpacing),
+                index * (cardWidth + cardSpacing),
+                (index + 1) * (cardWidth + cardSpacing),
+              ];
 
-          const scale = scrollX.interpolate({
-            inputRange,
-            outputRange: [0.9, 1, 0.9],
-            extrapolate: 'clamp',
-          });
+              const scale = scrollX.interpolate({
+                inputRange,
+                outputRange: [0.9, 1, 0.9],
+                extrapolate: 'clamp',
+              });
 
-          return (
-            <Animated.View
-              key={index}
-              style={[styles.card, { backgroundColor: card.backgroundColor, width: cardWidth, transform: [{ scale }] }]}
+              return (
+                <Animated.View
+                  key={index}
+                  style={[styles.card, { backgroundColor: card.backgroundColor, width: cardWidth, transform: [{ scale }] }]}
+                >
+                  <Icon name={card.icon} size={30} color="#fff" />
+                  <Text style={styles.cardTitle}>{card.title}</Text>
+                  <Text style={styles.cardValue}>{card.value}</Text>
+                </Animated.View>
+              );
+            })}
+          </Animated.ScrollView>
+
+          <View style={styles.quickActions}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigation.navigate('AddProductScreen')}
             >
-              <Icon name={card.icon} size={40} color="#fff" />
-              <Text style={styles.cardTitle}>{card.title}</Text>
-              <Text style={styles.cardValue}>{card.value}</Text>
-            </Animated.View>
-          );
-        })}
-      </Animated.ScrollView>
+              <Icon name="add-circle-outline" size={20} color="#fff" />
+              <Text style={styles.buttonText}>Ürün Ekle</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigation.navigate('ProductListScreen')}
+            >
+              <Icon name="list-alt" size={20} color="#fff" />
+              <Text style={styles.buttonText}>Ürün Listesi</Text>
+            </TouchableOpacity>
+          </View>
 
-      <View style={styles.quickActions}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('AddProductScreen')}
-        >
-          <Icon name="add-circle-outline" size={20} color="#fff" />
-          <Text style={styles.buttonText}>Ürün Ekle</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('ProductListScreen')}
-        >
-          <Icon name="list-alt" size={20} color="#fff" />
-          <Text style={styles.buttonText}>Ürün Listesi</Text>
-        </TouchableOpacity>
-      </View>
+          <Text style={styles.sectionTitle}>Son Eklenen Ürünler</Text>
 
-      <Text style={styles.sectionTitle}>Son Eklenen Ürünler</Text>
-
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#007bff" />
-          <Text>Yükleniyor...</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={latestProducts}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.productItem}>
-              <Text style={styles.productName}>{item.name}</Text>
-              <Text style={styles.productStock}>{item.stock > 0 ? `Stok: ${item.stock}` : 'Stokta Yok!'}</Text>
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#007bff" />
+              <Text>Yükleniyor...</Text>
             </View>
+          ) : (
+            <FlatList
+              data={latestProducts}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <View style={styles.productItem}>
+                  <Text style={styles.productName}>{item.name}</Text>
+                  <Text style={styles.productStock}>{item.stock > 0 ? `Stok: ${item.stock}` : 'Stokta Yok!'}</Text>
+                </View>
+              )}
+              contentContainerStyle={{ paddingBottom: 120 }}
+            />
           )}
-          contentContainerStyle={{ paddingBottom: 120 }}
-        />
-      )}
-    </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -191,10 +195,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   card: {
-    height: 150,
+    height: 130,
     width: screenWidth * 0.75,
     padding: 20,
-    borderRadius: 12,
+    borderRadius: 20,
     alignItems: 'center',
     marginHorizontal: 10,
     justifyContent: 'center',
@@ -206,14 +210,14 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 16,
-    color: '#fff',
+    color: '#000',
     fontWeight: 'bold',
     marginBottom: 8,
   },
   cardValue: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#000',
   },
   quickActions: {
     flexDirection: 'row',
