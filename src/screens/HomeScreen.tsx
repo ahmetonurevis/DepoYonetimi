@@ -96,6 +96,7 @@ const HomeScreen: React.FC = () => {
     { title: 'Toplam Ürünler', value: totalProducts, backgroundColor: '#4A90E2', icon: 'inventory' },
     { title: 'Düşük Stokta Olanlar', value: lowStockProducts, backgroundColor: '#F5A623', icon: 'warning' },
     { title: 'Stokta Olmayanlar', value: zeroStockProducts, backgroundColor: '#E94E77', icon: 'do-not-disturb' },
+    { title: 'Yeni Eklenenler', value: latestProducts.length, backgroundColor: '#FF7F00', icon: 'fiber-new' },
   ];
 
   return (
@@ -103,43 +104,24 @@ const HomeScreen: React.FC = () => {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
         <View style={styles.container}>
           <View style={styles.summaryContainer}>
-            <Animated.ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              snapToInterval={cardWidth + cardSpacing}
-              decelerationRate="fast"
-              scrollEventThrottle={16}
-              pagingEnabled
-              onScroll={Animated.event(
-                [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                { useNativeDriver: true }
-              )}
-            >
-              {summaryCards.map((card, index) => {
-                const inputRange = [
-                  (index - 1) * (cardWidth + cardSpacing),
-                  index * (cardWidth + cardSpacing),
-                  (index + 1) * (cardWidth + cardSpacing),
-                ];
-
-                const scale = scrollX.interpolate({
-                  inputRange,
-                  outputRange: [0.9, 1, 0.9],
-                  extrapolate: 'clamp',
-                });
-
-                return (
-                  <Animated.View
-                    key={index}
-                    style={[styles.card, { backgroundColor: card.backgroundColor, width: cardWidth, transform: [{ scale }] }]}
-                  >
-                    <Icon name={card.icon} size={40} color="#fff" />
-                    <Text style={styles.cardTitle}>{card.title}</Text>
-                    <Text style={styles.cardValue}>{card.value}</Text>
-                  </Animated.View>
-                );
-              })}
-            </Animated.ScrollView>
+            <View style={styles.row}>
+              {summaryCards.slice(0, 2).map((card, index) => (
+                <View key={index} style={[styles.card, { backgroundColor: card.backgroundColor }]}>
+                  <Icon name={card.icon} size={35} color="#fff" />
+                  <Text style={styles.cardTitle}>{card.title}</Text>
+                  <Text style={styles.cardValue}>{card.value}</Text>
+                </View>
+              ))}
+            </View>
+            <View style={styles.row}>
+              {summaryCards.slice(2, 4).map((card, index) => (
+                <View key={index} style={[styles.card, { backgroundColor: card.backgroundColor }]}>
+                  <Icon name={card.icon} size={35} color="#fff" />
+                  <Text style={styles.cardTitle}>{card.title}</Text>
+                  <Text style={styles.cardValue}>{card.value}</Text>
+                </View>
+              ))}
+            </View>
           </View>
 
           <View style={styles.quickActions}>
@@ -171,9 +153,16 @@ const HomeScreen: React.FC = () => {
               data={latestProducts}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
-                <View style={styles.productItem}>
-                  <Text style={styles.productName}>{item.name}</Text>
-                  <Text style={styles.productStock}>{item.stock > 0 ? `Stok: ${item.stock}` : 'Stokta Yok!'}</Text>
+                <View style={styles.productCard}>
+                  <View style={styles.productInfo}>
+                    <Icon name="fiber-new" size={20} color="#4A90E2" style={styles.productIcon} />
+                    <Text style={styles.productName}>{item.name}</Text>
+                  </View>
+                  <View style={styles.productDetails}>
+                    <Text style={[styles.productStock, item.stock > 0 ? styles.inStock : styles.outOfStock]}>
+                      {item.stock > 0 ? `Stok: ${item.stock}` : 'Stokta Yok!'}
+                    </Text>
+                  </View>
                 </View>
               )}
               contentContainerStyle={{ paddingBottom: 120 }}
@@ -192,18 +181,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#f7f9fc',
   },
   summaryContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center', // Kartları ortalamak için eklendi
     marginBottom: 20,
   },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
   card: {
+    flex: 1,
     height: 150,
-    width: screenWidth * 0.75,
     padding: 25,
     borderRadius: 25,
     alignItems: 'center',
-    marginHorizontal: 10,
     justifyContent: 'center',
+    marginHorizontal: 5,
     elevation: 6,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -211,7 +203,7 @@ const styles = StyleSheet.create({
     shadowRadius: 7,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 12,
     color: '#fff',
     fontWeight: '600',
     marginTop: 10,
@@ -262,15 +254,44 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.18,
     shadowRadius: 6,
   },
+  productCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    marginVertical: 10,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.18,
+    shadowRadius: 6,
+  },
+  productInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  productIcon: {
+    marginRight: 10,
+  },
   productName: {
     fontSize: 16,
     fontWeight: '700',
     color: '#333',
   },
+  productDetails: {
+    alignItems: 'flex-end',
+  },
   productStock: {
     fontSize: 14,
-    color: '#666',
-    marginTop: 4,
+    fontWeight: '600',
+  },
+  inStock: {
+    color: '#4CAF50',
+  },
+  outOfStock: {
+    color: '#E94E77',
   },
   loadingContainer: {
     flex: 1,
