@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Modal, TextInput, Button, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import Icon from 'react-native-vector-icons/MaterialIcons'; 
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 interface Product {
   id: string;
   name: string;
   stock: number;
+  price: number;
+  description: string;
 }
 
 const ProductListScreen: React.FC = () => {
@@ -14,6 +16,7 @@ const ProductListScreen: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [newStock, setNewStock] = useState<string>('');
 
   useEffect(() => {
@@ -22,11 +25,13 @@ const ProductListScreen: React.FC = () => {
         const productList: Product[] = [];
         const snapshot = await firestore().collection('Products').get();
         snapshot.forEach(doc => {
-          const { productName, productStock } = doc.data();
+          const { productName, productStock, productPrice, productDescription } = doc.data();
           productList.push({
             id: doc.id,
             name: productName,
             stock: productStock,
+            price: productPrice,
+            description: productDescription,
           });
         });
         setProducts(productList);
@@ -40,7 +45,6 @@ const ProductListScreen: React.FC = () => {
     fetchProducts();
   }, []);
 
- 
   const handleUpdateStock = async () => {
     if (!selectedProduct || newStock === '') {
       Alert.alert('Hata', 'Lütfen geçerli bir stok miktarı giriniz.');
@@ -58,7 +62,6 @@ const ProductListScreen: React.FC = () => {
         productStock: stockNumber
       });
 
-      
       setProducts(prevProducts => prevProducts.map(product =>
         product.id === selectedProduct.id ? { ...product, stock: stockNumber } : product
       ));
@@ -78,6 +81,11 @@ const ProductListScreen: React.FC = () => {
     setModalVisible(true);
   };
 
+  const openDetailModal = (product: Product) => {
+    setSelectedProduct(product);
+    setDetailModalVisible(true);
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -93,57 +101,79 @@ const ProductListScreen: React.FC = () => {
         data={products}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={[styles.productItem, item.stock === 0 ? styles.outOfStock : styles.inStock]}>
-            <View style={styles.productInfo}>
-              <Text style={styles.productName}>{item.name}</Text>
-              <View style={styles.stockInfo}>
-                <Icon
-                  name={item.stock === 0 ? "error-outline" : "check-circle-outline"}
-                  size={20}
-                  color={item.stock === 0 ? "#dc3545" : "#28a745"}
-                />
-                <Text style={[styles.productStock, { color: item.stock === 0 ? "#dc3545" : "#28a745" }]}>
-                  {item.stock > 0 ? `${item.stock} adet` : 'Stokta Yok'}
-                </Text>
+          <TouchableOpacity onPress={() => openDetailModal(item)}>
+            <View style={[styles.productItem, item.stock === 0 ? styles.outOfStock : styles.inStock]}>
+              <View style={styles.productInfo}>
+                <Text style={styles.productName}>{item.name}</Text>
+                <View style={styles.stockInfo}>
+                  <Icon
+                    name={item.stock === 0 ? "error-outline" : "check-circle-outline"}
+                    size={20}
+                    color={item.stock === 0 ? "#dc3545" : "#28a745"}
+                  />
+                  <Text style={[styles.productStock, { color: item.stock === 0 ? "#dc3545" : "#28a745" }]}>
+                    {item.stock > 0 ? `${item.stock} adet` : 'Stokta Yok'}
+                  </Text>
+                </View>
               </View>
+              <TouchableOpacity style={styles.editButton} onPress={() => openModal(item)}>
+                <Text style={styles.editButtonText}>Düzenle</Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity style={styles.editButton} onPress={() => openModal(item)}>
-              <Text style={styles.editButtonText}>Düzenle</Text>
-            </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
         )}
         contentContainerStyle={{ paddingBottom: 100 }}
       />
 
       {selectedProduct && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Stok Düzenle</Text>
-              <Text style={styles.modalProductName}>{selectedProduct.name}</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Yeni stok miktarı"
-                value={newStock}
-                onChangeText={setNewStock}
-                keyboardType="numeric"
-              />
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity style={[styles.modalButton, styles.updateButton]} onPress={handleUpdateStock}>
-                  <Text style={styles.modalButtonText}>Güncelle</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.modalButton, styles.cancelButton]} onPress={() => setModalVisible(false)}>
-                  <Text style={styles.modalButtonText}>İptal</Text>
-                </TouchableOpacity>
+        <>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Stok Düzenle</Text>
+                <Text style={styles.modalProductName}>{selectedProduct.name}</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Yeni stok miktarı"
+                  value={newStock}
+                  onChangeText={setNewStock}
+                  keyboardType="numeric"
+                />
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity style={[styles.modalButton, styles.updateButton]} onPress={handleUpdateStock}>
+                    <Text style={styles.modalButtonText}>Güncelle</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.modalButton, styles.cancelButton]} onPress={() => setModalVisible(false)}>
+                    <Text style={styles.modalButtonText}>İptal</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        </Modal>
+          </Modal>
+
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={detailModalVisible}
+            onRequestClose={() => setDetailModalVisible(false)}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Ürün Detayları</Text>
+                <Text style={styles.modalProductName}>{selectedProduct.name}</Text>
+                <Text>Stok: {selectedProduct.stock} adet</Text>
+                <Text>Fiyat: {selectedProduct.price} ₺</Text>
+                <Text>Açıklama: {selectedProduct.description}</Text>
+                <Button title="Kapat" onPress={() => setDetailModalVisible(false)} />
+              </View>
+            </View>
+          </Modal>
+        </>
       )}
     </View>
   );
