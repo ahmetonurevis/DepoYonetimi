@@ -32,18 +32,16 @@ const MenuComponent: React.FC<MenuProps> = ({ open, toggleAnimation, panResponde
         <Animated.View {...panResponder.panHandlers} style={[styles.menuSheet, sheetAnimationStyle, { transform: [{ translateY: pan.y }] }]}>
           <LinearGradient colors={['#ff9a9e', '#fad0c4', '#fad0c4']} start={{ x: 0, y: 0 }} end={{ x: 2, y: 2 }} style={styles.gradientBackground}>
             <View style={styles.menuContainer}>
-              <Image
-                source={require('../assets/profil.png')}
-                style={{
-                  width: width * 0.2,
-                  height: width * 0.2,
-                  borderRadius: (width * 0.2) / 2,
-                  marginBottom: height * 0.02,
-                }}
-              />
-              <Text style={[styles.profileName, { fontSize: width * 0.05 }]}>Ahmet Onur Evis</Text>
-              <Text style={[styles.profileRole, { fontSize: width * 0.035 }]}>Yönetici</Text>
-
+            <View style={styles.profileContainer}>
+                <Image
+                  source={require('../assets/profil.png')}
+                  style={styles.profileImage}
+                />
+                <View>
+                  <Text style={styles.profileName}>Ahmet Onur Evis</Text>
+                  <Text style={styles.profileRole}>Yönetici</Text>
+                </View>
+              </View>
               {['Anasayfa', 'Ürünlerim', 'Siparişler', 'Bildirimler', 'Destek', 'Çıkış Yap'].map((menuItem, index) => (
                 <View style={styles.menuItem} key={index}>
                   <Icon name={getIconName(menuItem)} size={24} color="#540a0a" />
@@ -98,6 +96,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  profileContainer: {
+    flexDirection: 'row', 
+    alignItems: 'flex-end',
+    marginBottom: height * 0.03,
+    paddingHorizontal: width * 0.05,
+  },
+  profileImage: {
+    width: width * 0.2,
+    height: width * 0.2,
+    borderRadius: (width * 0.2) / 2, 
+    marginRight: width * 0.02,
+  },
+  profileName: {
+    fontSize: width * 0.05,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  profileRole: {
+    fontSize: width * 0.04,
+    color: '#fff',
+  },
   menuSheet: {
     flex: 1,
     width: '100%',
@@ -119,15 +138,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  profileName: {
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: height * 0.01,
-  },
-  profileRole: {
-    color: '#fff',
-    marginBottom: height * 0.02,
-  },
   menuContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -135,14 +145,17 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: width * 0.05,
     paddingVertical: height * 0.02,
+    width: '100%',  
+    borderBottomWidth: 0.8,  
+    borderBottomColor: '#ddd',  
+    paddingHorizontal: width * 0.05,  
   },
   menuText: {
     color: '#fff',
     fontWeight: 'bold',
-    marginLeft: width * 0.02,
-    textAlign: 'left',
+    marginLeft: width * 0.05,
+    fontSize: width * 0.045,
   },
   closeButton: {
     marginTop: height * 0.03,
