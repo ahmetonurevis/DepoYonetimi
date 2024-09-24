@@ -131,7 +131,7 @@ const HomeScreen: React.FC = () => {
               key={index}
               style={[styles.card, { backgroundColor: card.backgroundColor, width: cardWidth, transform: [{ scale }] }]}
             >
-              <Icon name={card.icon} size={30} color="#fff" />
+              <Icon name={card.icon} size={40} color="#fff" />
               <Text style={styles.cardTitle}>{card.title}</Text>
               <Text style={styles.cardValue}>{card.value}</Text>
             </Animated.View>
@@ -139,18 +139,19 @@ const HomeScreen: React.FC = () => {
         })}
       </Animated.ScrollView>
 
-
       <View style={styles.quickActions}>
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate('AddProductScreen')}
         >
+          <Icon name="add-circle-outline" size={20} color="#fff" />
           <Text style={styles.buttonText}>Ürün Ekle</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate('ProductListScreen')}
         >
+          <Icon name="list-alt" size={20} color="#fff" />
           <Text style={styles.buttonText}>Ürün Listesi</Text>
         </TouchableOpacity>
       </View>
@@ -183,37 +184,36 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
+    backgroundColor: '#f4f6f9',
   },
   summaryContainer: {
     flexDirection: 'row',
-    marginBottom: 5,
+    marginBottom: 10,
   },
   card: {
-    height: 130,
+    height: 150,
     width: screenWidth * 0.75,
     padding: 20,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
     marginHorizontal: 10,
     justifyContent: 'center',
-    elevation: 4,
+    elevation: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
   },
   cardTitle: {
     fontSize: 16,
-    color: '#000000',
+    color: '#fff',
     fontWeight: 'bold',
     marginBottom: 8,
   },
   cardValue: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#000000'
+    color: '#fff',
   },
   quickActions: {
     flexDirection: 'row',
@@ -223,40 +223,47 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     backgroundColor: '#007bff',
-    padding: 12,
-    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     marginHorizontal: 5,
+    elevation: 3,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
+    marginLeft: 10,
   },
   sectionTitle: {
     fontSize: 18,
     marginBottom: 8,
     fontWeight: 'bold',
+    color: '#333',
   },
   productItem: {
     marginVertical: 8,
     marginHorizontal: 5,
     padding: 20,
-    borderRadius: 8,
-    backgroundColor: '#f1f1f1', 
-    elevation: 4,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.15,
     shadowRadius: 4,
   },
   productName: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#000', 
+    color: '#333',
   },
   productStock: {
     fontSize: 14,
-    color: '#000', 
+    color: '#666',
+    marginTop: 4,
   },
   loadingContainer: {
     flex: 1,

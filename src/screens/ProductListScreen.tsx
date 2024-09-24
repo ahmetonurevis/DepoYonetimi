@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f4f8',
   },
   productItem: {
-    padding: 16,
+    padding: 12,
     borderRadius: 12,
     marginBottom: 15,
     backgroundColor: '#fff',
