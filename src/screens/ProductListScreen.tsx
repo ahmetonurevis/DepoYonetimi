@@ -7,7 +7,8 @@ interface Product {
   id: string;
   name: string;
   stock: number;
-  price: number;
+  purchasePrice: number;
+  salePrice: number;
   description: string;
 }
 
@@ -25,12 +26,13 @@ const ProductListScreen: React.FC = () => {
         const productList: Product[] = [];
         const snapshot = await firestore().collection('Products').get();
         snapshot.forEach(doc => {
-          const { productName, productStock, productPrice, productDescription } = doc.data();
+          const { productName, productStock, productPurchasePrice, productSalePrice, productDescription } = doc.data();
           productList.push({
             id: doc.id,
             name: productName,
             stock: productStock,
-            price: productPrice,
+            purchasePrice: productPurchasePrice,
+            salePrice: productSalePrice,
             description: productDescription,
           });
         });
@@ -45,7 +47,7 @@ const ProductListScreen: React.FC = () => {
     fetchProducts();
   }, []);
 
-  const handleUpdateStock = async () => {
+  const handleUpdateStock = async (action: 'add' | 'subtract') => {
     if (!selectedProduct || newStock === '') {
       Alert.alert('Hata', 'Lütfen geçerli bir stok miktarı giriniz.');
       return;
@@ -58,18 +60,30 @@ const ProductListScreen: React.FC = () => {
         return;
       }
 
+      let updatedStock = selectedProduct.stock;
+
+      if (action === 'add') {
+        updatedStock += stockNumber;
+      } else if (action === 'subtract') {
+        if (selectedProduct.stock - stockNumber < 0) {
+          Alert.alert('Hata', 'Stok miktarı sıfırdan az olamaz.');
+          return;
+        }
+        updatedStock -= stockNumber;
+      }
+
       await firestore().collection('Products').doc(selectedProduct.id).update({
-        productStock: stockNumber
+        productStock: updatedStock,
       });
 
       setProducts(prevProducts => prevProducts.map(product =>
-        product.id === selectedProduct.id ? { ...product, stock: stockNumber } : product
+        product.id === selectedProduct.id ? { ...product, stock: updatedStock } : product
       ));
 
       setModalVisible(false);
       setSelectedProduct(null);
       setNewStock('');
-      Alert.alert('Başarılı', 'Stok miktarı güncellendi.');
+      Alert.alert('Başarılı', `Stok miktarı ${action === 'add' ? 'artırıldı' : 'azaltıldı'}.`);
     } catch (error) {
       Alert.alert('Hata', 'Stok güncellenirken bir hata oluştu.');
     }
@@ -77,7 +91,7 @@ const ProductListScreen: React.FC = () => {
 
   const openModal = (product: Product) => {
     setSelectedProduct(product);
-    setNewStock(product.stock.toString());
+    setNewStock(''); // Yeni stok değeri sıfırlanır
     setModalVisible(true);
   };
 
@@ -117,7 +131,7 @@ const ProductListScreen: React.FC = () => {
                 </View>
               </View>
               <TouchableOpacity style={styles.editButton} onPress={() => openModal(item)}>
-                <Text style={styles.editButtonText}>Düzenle</Text>
+                <Text style={styles.editButtonText}>Stok Düzenle</Text>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
@@ -145,8 +159,11 @@ const ProductListScreen: React.FC = () => {
                   keyboardType="numeric"
                 />
                 <View style={styles.buttonContainer}>
-                  <TouchableOpacity style={[styles.modalButton, styles.updateButton]} onPress={handleUpdateStock}>
-                    <Text style={styles.modalButtonText}>Güncelle</Text>
+                  <TouchableOpacity style={[styles.modalButton, styles.updateButton]} onPress={() => handleUpdateStock('add')}>
+                    <Text style={styles.modalButtonText}>Stok Ekle</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.modalButton, styles.subtractButton]} onPress={() => handleUpdateStock('subtract')}>
+                    <Text style={styles.modalButtonText}>Stok Düş</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={[styles.modalButton, styles.cancelButton]} onPress={() => setModalVisible(false)}>
                     <Text style={styles.modalButtonText}>İptal</Text>
@@ -167,7 +184,8 @@ const ProductListScreen: React.FC = () => {
                 <Text style={styles.modalTitle}>Ürün Detayları</Text>
                 <Text style={styles.modalProductName}>{selectedProduct.name}</Text>
                 <Text>Stok: {selectedProduct.stock} adet</Text>
-                <Text>Fiyat: {selectedProduct.price} ₺</Text>
+                <Text>Alış Fiyatı: {selectedProduct.purchasePrice} ₺</Text>
+                <Text>Satış Fiyatı: {selectedProduct.salePrice} ₺</Text>
                 <Text>Açıklama: {selectedProduct.description}</Text>
                 <Button title="Kapat" onPress={() => setDetailModalVisible(false)} />
               </View>
@@ -289,6 +307,9 @@ const styles = StyleSheet.create({
   },
   updateButton: {
     backgroundColor: '#28a745',
+  },
+  subtractButton: {
+    backgroundColor: '#ffc107',
   },
   cancelButton: {
     backgroundColor: '#dc3545',

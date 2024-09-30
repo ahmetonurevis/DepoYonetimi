@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, ScrollView } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import LinearGradient from 'react-native-linear-gradient';
 import { Icon } from 'react-native-elements';
@@ -7,19 +7,21 @@ import { Icon } from 'react-native-elements';
 const AddProductScreen: React.FC = () => {
   const [productName, setProductName] = useState<string>('');
   const [productStock, setProductStock] = useState<string>('');
-  const [productPrice, setProductPrice] = useState<string>('');
+  const [productPurchasePrice, setProductPurchasePrice] = useState<string>('');
+  const [productSalePrice, setProductSalePrice] = useState<string>('');
   const [productDescription, setProductDescription] = useState<string>('');
 
   const handleAddProduct = async () => {
-    if (!productName || !productStock || !productPrice) {
+    if (!productName || !productStock || !productPurchasePrice || !productSalePrice) {
       Alert.alert('Hata', 'Lütfen gerekli tüm alanları doldurunuz.');
       return;
     }
 
     const stockNumber = parseInt(productStock, 10);
-    const priceNumber = parseFloat(productPrice);
+    const purchasePriceNumber = parseFloat(productPurchasePrice);
+    const salePriceNumber = parseFloat(productSalePrice);
 
-    if (isNaN(stockNumber) || isNaN(priceNumber)) {
+    if (isNaN(stockNumber) || isNaN(purchasePriceNumber) || isNaN(salePriceNumber)) {
       Alert.alert('Hata', 'Lütfen geçerli sayısal değerler giriniz.');
       return;
     }
@@ -28,7 +30,8 @@ const AddProductScreen: React.FC = () => {
       await firestore().collection('Products').add({
         productName,
         productStock: stockNumber,
-        productPrice: priceNumber,
+        productPurchasePrice: purchasePriceNumber,
+        productSalePrice: salePriceNumber,
         productDescription,
         createdAt: firestore.FieldValue.serverTimestamp(),
       });
@@ -36,7 +39,8 @@ const AddProductScreen: React.FC = () => {
       Alert.alert('Başarılı', `Ürün eklendi: ${productName}`);
       setProductName('');
       setProductStock('');
-      setProductPrice('');
+      setProductPurchasePrice('');
+      setProductSalePrice('');
       setProductDescription('');
     } catch (error) {
       Alert.alert('Hata', 'Ürün eklenirken bir hata oluştu.');
@@ -77,9 +81,21 @@ const AddProductScreen: React.FC = () => {
           <Icon name="dollar-sign" type="feather" color="#007bff" style={styles.icon} />
           <TextInput
             style={styles.input}
-            placeholder="Fiyat"
-            value={productPrice}
-            onChangeText={setProductPrice}
+            placeholder="Alış Fiyatı"
+            value={productPurchasePrice}
+            onChangeText={setProductPurchasePrice}
+            keyboardType="numeric"
+            placeholderTextColor="#aaa"
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Icon name="tag" type="feather" color="#007bff" style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Satış Fiyatı"
+            value={productSalePrice}
+            onChangeText={setProductSalePrice}
             keyboardType="numeric"
             placeholderTextColor="#aaa"
           />
