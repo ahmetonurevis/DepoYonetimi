@@ -95,14 +95,12 @@ const DashboardScreen = () => {
 };
 
 const getRandomColor = () => {
-  const colors = [
-    '#4caf50', '#ff9800', '#2196f3', '#f44336', '#9c27b0', 
-    '#e91e63', '#00bcd4', '#8bc34a', '#ffc107', '#795548', 
-    '#3f51b5', '#607d8b', '#9e9e9e', '#ff5722', '#673ab7', 
-    '#03a9f4', '#cddc39', '#ffeb3b', '#009688', '#fdd835', 
-    '#7b1fa2'
-  ];
-  return colors[Math.floor(Math.random() * colors.length)];
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
 };
 
 const chartConfig = {
