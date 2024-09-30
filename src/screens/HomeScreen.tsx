@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, Animate
 import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import { Icon } from 'react-native-elements';
-import { styles } from '../styles/homecss';
+import { styles } from '../css/homecss';
 
 const { width: screenWidth } = Dimensions.get('window');
 

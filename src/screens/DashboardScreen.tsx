@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, ActivityIndicator, ScrollView } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import firestore from '@react-native-firebase/firestore';
-import { styles, chartConfig, getRandomColor } from '../styles/dashboardcss';
+import { styles, chartConfig, getRandomColor } from '../css/dashboardcss';
 
 const { width } = Dimensions.get('window');
 

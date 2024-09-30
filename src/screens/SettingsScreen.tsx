@@ -3,7 +3,7 @@ import { View, Text, Switch, StyleSheet, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import RNPickerSelect from 'react-native-picker-select';
 import firestore from '@react-native-firebase/firestore'; 
-import { lightStyles, darkStyles } from '../styles/settingscss'; 
+import { lightStyles, darkStyles } from '../css/settingscss'; 
 
 const SettingsScreen = () => {
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);

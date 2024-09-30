@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
-import { styles } from '../styles/findcss';
+import { styles } from '../css/findcss';
 
 const screenWidth = Dimensions.get('window').width;
 

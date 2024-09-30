@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Button, View, Text, ScrollView, Image, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {styles}  from '../styles/profilecss'; 
+import {styles}  from '../css/profilecss'; 
 
 const ProfileScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);

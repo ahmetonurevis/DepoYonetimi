@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvo
 import firestore from '@react-native-firebase/firestore';
 import LinearGradient from 'react-native-linear-gradient';
 import { Icon } from 'react-native-elements';
-import { styles } from '../styles/addproductcss';
+import { styles } from '../css/addproductcss';
 
 const AddProductScreen: React.FC = () => {
   const [productName, setProductName] = useState<string>('');
