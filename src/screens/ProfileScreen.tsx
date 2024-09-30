@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Button } from 'react-native';
-import styled from 'styled-components/native';
+import { Modal, Button, View, Text, ScrollView, Image, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const ProfileScreen = () => {
@@ -42,33 +41,33 @@ const ProfileScreen = () => {
   };
 
   return (
-    <SafeArea>
-      <Container>
-        <Header>
-          <ProfileDetails>
-            <ProfileText>Profilim</ProfileText>
-            <UserName>Ahmet Onur Evis</UserName>
-            <UserPhone>(546) 563-8606</UserPhone>
-            <UserEmail>evis4798@gmail.com</UserEmail>
-          </ProfileDetails>
-          <AvatarContainer>
-            <Avatar source={{ uri: 'https://randomuser.me/api/portraits/men/45.jpg' }} />
-          </AvatarContainer>
-        </Header>
+    <View style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.profileDetails}>
+            <Text style={styles.profileText}>Profilim</Text>
+            <Text style={styles.userName}>Ahmet Onur Evis</Text>
+            <Text style={styles.userPhone}>(546) 563-8606</Text>
+            <Text style={styles.userEmail}>evis4798@gmail.com</Text>
+          </View>
+          <View style={styles.avatarContainer}>
+            <Image style={styles.avatar} source={{ uri: 'https://randomuser.me/api/portraits/men/45.jpg' }} />
+          </View>
+        </View>
 
-        <BalanceCard>
-          <CardRow>
-            <BalanceText>Bakiye</BalanceText>
+        <View style={styles.balanceCard}>
+          <View style={styles.cardRow}>
+            <Text style={styles.balanceText}>Bakiye</Text>
             <Icon name="credit-card" size={24} color="#fff" />
-          </CardRow>
-          <BalanceAmount>$26,968.00</BalanceAmount>
-          <CardNumber>**** **** **** 3765</CardNumber>
-        </BalanceCard>
+          </View>
+          <Text style={styles.balanceAmount}>$26,968.00</Text>
+          <Text style={styles.cardNumber}>**** **** **** 3765</Text>
+        </View>
 
-        <AddCardButton onPress={() => setModalVisible(true)}>
+        <TouchableOpacity style={styles.addCardButton} onPress={() => setModalVisible(true)}>
           <Icon name="add" size={24} color="#fff" />
-          <AddCardText>Yeni Kart Ekle</AddCardText>
-        </AddCardButton>
+          <Text style={styles.addCardText}>Yeni Kart Ekle</Text>
+        </TouchableOpacity>
 
         <Modal
           animationType="slide"
@@ -78,27 +77,36 @@ const ProfileScreen = () => {
             setModalVisible(!modalVisible);
           }}
         >
-          <ModalContainer>
-            <ModalView>
-              <ModalHeader>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalView}>
+              <View style={styles.modalHeader}>
                 <Icon name="credit-card" size={24} color="#fff" />
-                <ModalTitle>Kart Ekle</ModalTitle>
-              </ModalHeader>
-              <Input
+                <Text style={styles.modalTitle}>Kart Ekle</Text>
+              </View>
+              <TextInput 
+                style={styles.input}
+                placeholder="İsim Soyisim"
+                keyboardType="default"
+              />
+              
+              <TextInput
+                style={styles.input}
                 placeholder="Kart Numarası"
                 keyboardType="numeric"
                 value={cardNumber}
                 onChangeText={handleCardNumberChange}
                 maxLength={19}
               />
-              <Input
+              <TextInput
+                style={styles.input}
                 placeholder="Son Kullanma Tarihi (MM/YY)"
                 keyboardType="numeric"
                 value={expiryDate}
                 onChangeText={handleExpiryDateChange}
                 maxLength={5}
               />
-              <Input
+              <TextInput
+                style={styles.input}
                 placeholder="CVV"
                 keyboardType="numeric"
                 secureTextEntry={true}
@@ -106,214 +114,191 @@ const ProfileScreen = () => {
                 onChangeText={handleCvvChange}
                 maxLength={3}
               />
-              <ButtonContainer>
+              <View style={styles.buttonContainer}>
                 <Button title="İptal" onPress={handleCancel} />
                 <Button title="Kaydet" onPress={() => setModalVisible(false)} />
-              </ButtonContainer>
-            </ModalView>
-          </ModalContainer>
+              </View>
+            </View>
+          </View>
         </Modal>
 
-        <Menu>
-          <MenuItem>
+        <View style={styles.menu}>
+          <View style={styles.menuItem}>
             <Icon name="person" size={24} color="#4caf50" />
-            <MenuText>Kişisel Bilgiler</MenuText>
-          </MenuItem>
-          <MenuItem>
+            <Text style={styles.menuText}>Kişisel Bilgiler</Text>
+          </View>
+          <View style={styles.menuItem}>
             <Icon name="lock" size={24} color="#4caf50" />
-            <MenuText>Gizlilik ve Güvenlik</MenuText>
-          </MenuItem>
-          <MenuItem>
+            <Text style={styles.menuText}>Gizlilik ve Güvenlik</Text>
+          </View>
+          <View style={styles.menuItem}>
             <Icon name="card-giftcard" size={24} color="#4caf50" />
-            <MenuText>Teklifler ve Ödüller</MenuText>
-          </MenuItem>
-          <MenuItem>
+            <Text style={styles.menuText}>Teklifler ve Ödüller</Text>
+          </View>
+          <View style={styles.menuItem}>
             <Icon name="help" size={24} color="#4caf50" />
-            <MenuText>Yardım</MenuText>
-          </MenuItem>
-          <MenuItem>
+            <Text style={styles.menuText}>Yardım</Text>
+          </View>
+          <View style={styles.menuItem}>
             <Icon name="exit-to-app" size={24} color="#4caf50" />
-            <MenuText>Çıkış Yap</MenuText>
-          </MenuItem>
-        </Menu>
-      </Container>
-    </SafeArea>
+            <Text style={styles.menuText}>Çıkış Yap</Text>
+          </View>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
-const SafeArea = styled.SafeAreaView`
-  flex: 1;
-  background-color: #f5f5f5;
-`;
-
-const Container = styled.ScrollView`
-  flex: 1;
-  padding: 20px;
-  padding-bottom: 100px;
-`;
-
-const Header = styled.View`
-  background-color: #004d40;
-  padding: 20px;
-  border-radius: 15px;
-  margin-bottom: 20px;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const ProfileDetails = styled.View`
-  flex: 1;
-`;
-
-const ProfileText = styled.Text`
-  color: #fff;
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 5px;
-`;
-
-const UserName = styled.Text`
-  color: #fff;
-  font-size: 18px;
-  font-weight: bold;
-`;
-
-const UserPhone = styled.Text`
-  color: #fff;
-  font-size: 14px;
-  margin-top: 5px;
-`;
-
-const UserEmail = styled.Text`
-  color: #fff;
-  font-size: 14px;
-  margin-top: 5px;
-`;
-
-const AvatarContainer = styled.View`
-  width: 60px;
-  height: 60px;
-`;
-
-const Avatar = styled.Image`
-  width: 60px;
-  height: 60px;
-  border-radius: 30px;
-`;
-
-const BalanceCard = styled.View`
-  background-color: #1e88e5;
-  padding: 20px;
-  border-radius: 15px;
-  shadow-color: #000;
-  shadow-opacity: 0.1;
-  shadow-radius: 10px;
-  elevation: 3;
-  margin-bottom: 20px;
-`;
-
-const CardRow = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const BalanceText = styled.Text`
-  color: #fff;
-  font-size: 16px;
-`;
-
-const BalanceAmount = styled.Text`
-  color: #fff;
-  font-size: 28px;
-  font-weight: bold;
-  margin-top: 10px;
-`;
-
-const CardNumber = styled.Text`
-  color: #fff;
-  font-size: 16px;
-  margin-top: 15px;
-`;
-
-const AddCardButton = styled.TouchableOpacity`
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  background-color: #4caf50;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-`;
-
-const AddCardText = styled.Text`
-  color: #fff;
-  font-size: 18px;
-  margin-left: 10px;
-`;
-
-const ModalContainer = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
-`;
-
-const ModalView = styled.View`
-  width: 90%;
-  background-color: white;
-  border-radius: 20px;
-  padding: 20px;
-  align-items: center;
-`;
-
-const ModalHeader = styled.View`
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
-`;
-
-const ModalTitle = styled.Text`
-  font-size: 20px;
-  color: #000;
-  margin-left: 10px;
-`;
-
-const Input = styled.TextInput`
-  width: 100%;
-  border-width: 1px;
-  border-color: #ccc;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 15px;
-`;
-
-const ButtonContainer = styled.View`
-  flex-direction: row;
-  justify-content: space-around;
-  width: 100%;
-`;
-
-const Menu = styled.View`
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 20px;
-`;
-
-const MenuItem = styled.View`
-  flex-direction: row;
-  align-items: center;
-  padding: 15px;
-  border-bottom-width: 1px;
-  border-bottom-color: #eee;
-`;
-
-const MenuText = styled.Text`
-  font-size: 16px;
-  margin-left: 15px;
-`;
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  container: {
+    flex: 1,
+    padding: 20,
+    paddingBottom: 100,
+  },
+  header: {
+    backgroundColor: '#004d40',
+    padding: 20,
+    borderRadius: 15,
+    marginBottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  profileDetails: {
+    flex: 1,
+  },
+  profileText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  userName: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  userPhone: {
+    color: '#fff',
+    fontSize: 14,
+    marginTop: 5,
+  },
+  userEmail: {
+    color: '#fff',
+    fontSize: 14,
+    marginTop: 5,
+  },
+  avatarContainer: {
+    width: 60,
+    height: 60,
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
+  balanceCard: {
+    backgroundColor: '#1e88e5',
+    padding: 20,
+    borderRadius: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 3,
+    marginBottom: 20,
+  },
+  cardRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  balanceText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  balanceAmount: {
+    color: '#fff',
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginTop: 10,
+  },
+  cardNumber: {
+    color: '#fff',
+    fontSize: 16,
+    marginTop: 15,
+  },
+  addCardButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#4caf50',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  addCardText: {
+    color: '#fff',
+    fontSize: 18,
+    marginLeft: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    width: '90%',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    color: '#000',
+    marginLeft: 10,
+  },
+  input: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 15,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+  },
+  menu: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 20,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  menuText: {
+    fontSize: 16,
+    marginLeft: 15,
+  },
+});
 
 export default ProfileScreen;

@@ -42,7 +42,7 @@ const MenuComponent: React.FC<MenuProps> = ({ open, toggleAnimation, panResponde
                   <Text style={styles.profileRole}>Yönetici</Text>
                 </View>
               </View>
-              {['Anasayfa', 'Ürün Ekle', 'Siparişler', 'Bildirimler', 'Destek', 'Çıkış Yap'].map((menuItem, index) => (
+              {['Anasayfa', 'Ürün Ekle', 'Siparişler', 'Ayarlar', 'Destek', 'Çıkış Yap'].map((menuItem, index) => (
                 <View style={styles.menuItem} key={index}>
                   <Icon name={getIconName(menuItem)} size={24} color="#540a0a" />
                   <Text style={[styles.menuText, { fontSize: width * 0.045 }]}>{menuItem}</Text>
@@ -68,8 +68,8 @@ const getIconName = (menuItem: string) => {
       return 'inventory';
     case 'Siparişler':
       return 'shopping-cart';
-    case 'Bildirimler':
-      return 'notifications';
+    case 'Ayarlar':
+      return 'settings';
     case 'Destek':
       return 'support-agent';
     case 'Çıkış Yap':

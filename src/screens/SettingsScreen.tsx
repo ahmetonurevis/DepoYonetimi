@@ -1,20 +1,112 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Switch, StyleSheet, ScrollView } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import RNPickerSelect from 'react-native-picker-select';
 
-const SettingsScreen: React.FC = () => {
+const SettingsScreen = () => {
+  const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
+  const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('Türkçe'); 
+
+  const toggleNotifications = () => setIsNotificationsEnabled((previousState) => !previousState);
+  const toggleDarkMode = () => setIsDarkModeEnabled((previousState) => !previousState);
+
   return (
-    <View style={styles.container}>
-      <Text>Ürünler</Text>
-    </View>
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Ayarlar</Text>
+      </View>
+
+      <View style={styles.settingsItem}>
+        <Icon name="notifications" size={24} color="#4caf50" />
+        <Text style={styles.settingsText}>Bildirimler</Text>
+        <Switch
+          value={isNotificationsEnabled}
+          onValueChange={toggleNotifications}
+        />
+      </View>
+
+      <View style={styles.settingsItem}>
+        <Icon name="dark-mode" size={24} color="#4caf50" />
+        <Text style={styles.settingsText}>Karanlık Mod</Text>
+        <Switch
+          value={isDarkModeEnabled}
+          onValueChange={toggleDarkMode}
+        />
+      </View>
+
+      <View style={styles.settingsItem}>
+        <Icon name="language" size={24} color="#4caf50" />        
+          <Text style={styles.settingsText}>Dil Seçimi</Text>
+          <View style={styles.textGroup}>
+          <RNPickerSelect
+            onValueChange={(value) => setSelectedLanguage(value)}
+            items={[
+              { label: 'Türkçe', value: 'Türkçe' },
+              { label: 'İngilizce', value: 'İngilizce' },
+              { label: 'Almanca', value: 'Almanca' },
+            ]}
+            value={selectedLanguage}
+            placeholder={{ label: 'Dil Seçiniz...', value: null }}            
+          />
+        </View>
+      </View>
+
+      <View style={styles.settingsItem}>
+        <Icon name="security" size={24} color="#4caf50" />
+        <View>
+        <Text style={styles.settingsText}>Hesap Güvenliği</Text>
+        </View>
+        <View>
+          <Text style={styles.settingsSubText}>Güçlü</Text>
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
+    padding: 20,
+  },
+  header: {
+    padding: 20,
+    backgroundColor: '#004d40',
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  title: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  settingsItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0',
+    padding: 15,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  textGroup: {
+    flex: 1,
+    marginLeft: 80,
+  },
+  settingsText: {
+    fontSize: 18,
+  },
+  settingsSubText: {
+    fontSize: 16,
+    color: '#888',
   },
 });
 
