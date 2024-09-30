@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, Dimensions, Pressable, Image, Animated } from '
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 const { width, height } = Dimensions.get('window');
 
 interface MenuProps {
@@ -42,6 +43,7 @@ const MenuComponent: React.FC<MenuProps> = ({ open, toggleAnimation, panResponde
                   <Text style={styles.profileRole}>Yönetici</Text>
                 </View>
               </View>
+
               {['Anasayfa', 'Ürün Ekle', 'Siparişler', 'Ayarlar', 'Destek', 'Çıkış Yap'].map((menuItem, index) => (
                 <View style={styles.menuItem} key={index}>
                   <Icon name={getIconName(menuItem)} size={24} color="#540a0a" />
@@ -50,7 +52,7 @@ const MenuComponent: React.FC<MenuProps> = ({ open, toggleAnimation, panResponde
               ))}
 
               <Pressable onPress={toggleAnimation} style={styles.closeButton}>
-                <Text style={styles.closeButtonText}>Close</Text>
+                <Text style={styles.closeButtonText}>Kapat</Text>
               </Pressable>
             </View>
           </LinearGradient>
