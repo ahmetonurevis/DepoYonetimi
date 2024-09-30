@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 const FindScreen: React.FC = () => {
   return (
     <View style={styles.container}>
-      <Text>Find Screen</Text>
+      <Text>Arama</Text>
     </View>
   );
 };

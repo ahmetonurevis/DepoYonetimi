@@ -6,7 +6,7 @@ import HomeScreen from '../screens/HomeScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import FindScreen from '../screens/FindScreen';
-import ChatScreen from '../screens/ChatScreen';
+import DashboardScreen from '../screens/DashboardScreen';
 import AddProductScreen from '../screens/AddProductScreen';
 import ProductListScreen from '../screens/ProductListScreen';
 
@@ -188,8 +188,8 @@ const BottomTabNavigator: React.FC = () => {
       />
 
       <Tab.Screen
-        name="Chat"
-        component={ChatScreen}
+        name="Dashboard"
+        component={DashboardScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center', top: 10 }}>

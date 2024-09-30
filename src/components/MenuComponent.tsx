@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions, Pressable, Image, Animated } from '
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -15,7 +16,9 @@ interface MenuProps {
 }
 
 const MenuComponent: React.FC<MenuProps> = ({ open, toggleAnimation, panResponder, pan, sheetAnimationStyle }) => {
+  const navigation = useNavigation();
   if (!open) return null;
+  
 
   return (
     <View style={styles.container}>
