@@ -194,7 +194,7 @@ const BottomTabNavigator: React.FC = () => {
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center', top: 10 }}>
               <Image
-                source={require('../assets/icons/chat.png')}
+                source={require('../assets/icons/dashboard.png')}
                 resizeMode="contain"
                 style={{
                   width: 25,
@@ -203,7 +203,7 @@ const BottomTabNavigator: React.FC = () => {
                 }}
               />
               <Text style={{ color: focused ? '#e32f45' : '#748c94', fontSize: 12 }}>
-                Chat
+                Dashboard
               </Text>
             </View>
           ),

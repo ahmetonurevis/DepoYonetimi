@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, ActivityIndicator } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { View, Text, StyleSheet, Dimensions, ActivityIndicator, ScrollView } from 'react-native';
+import { PieChart } from 'react-native-chart-kit';
 import firestore from '@react-native-firebase/firestore';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 interface Product {
   id: string;
@@ -18,10 +18,11 @@ const DashboardScreen = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
+    
+    const unsubscribe = firestore()
+      .collection('Products')
+      .onSnapshot(snapshot => {
         const productList: Product[] = [];
-        const snapshot = await firestore().collection('Products').get();
         snapshot.forEach(doc => {
           const { productName, productStock, productPrice, productDescription } = doc.data();
           productList.push({
@@ -33,14 +34,12 @@ const DashboardScreen = () => {
           });
         });
         setProducts(productList);
-      } catch (error) {
-        console.error("Error fetching products: ", error);
-      } finally {
         setLoading(false);
-      }
-    };
+      }, error => {
+        console.error("Error fetching products: ", error);
+      });
 
-    fetchProducts();
+    return () => unsubscribe();
   }, []);
 
   if (loading) {
@@ -52,80 +51,123 @@ const DashboardScreen = () => {
     );
   }
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Dashboard</Text>
 
-      <View style={styles.row}>
-        {products.map((product, index) => (
-          <TouchableOpacity key={index} style={styles.card}>
-            <Icon name="inventory" size={40} color="#fff" />
-            <Text style={styles.cardTitle}>{product.name}</Text>
-            <Text style={styles.cardValue}>{product.stock > 0 ? `${product.stock} adet` : 'Stok Yok'}</Text>
-          </TouchableOpacity>
-        ))}
+  const pieData = products.map((product) => ({
+    name: product.name,
+    population: product.stock,
+    color: getRandomColor(),
+    legendFontColor: '#333',
+    legendFontSize: 12,
+    
+  }));
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Ürün Stokları</Text>
+
+      <View style={styles.cardRow}>
+        <View style={styles.statCard}>
+          <Text style={styles.statTitle}>Toplam Ürün</Text>
+          <Text style={styles.statValue}>{products.length}</Text>
+        </View>
+        <View style={styles.statCard}>
+          <Text style={styles.statTitle}>Toplam Stok</Text>
+          <Text style={styles.statValue}>
+            {products.reduce((total, product) => total + product.stock, 0)}
+          </Text>
+        </View>
       </View>
-    </View>
+
+     
+      <Text style={styles.chartTitle}>Departman Satışları</Text>
+      <PieChart
+        data={pieData}
+        width={width - 40} 
+        height={250}
+        chartConfig={chartConfig}
+        accessor="population"
+        backgroundColor="transparent"
+        paddingLeft="15"
+        absolute
+      />
+    </ScrollView>
   );
+};
+
+const getRandomColor = () => {
+  const colors = [
+    '#4caf50', '#ff9800', '#2196f3', '#f44336', '#9c27b0', 
+    '#e91e63', '#00bcd4', '#8bc34a', '#ffc107', '#795548', 
+    '#3f51b5', '#607d8b', '#9e9e9e', '#ff5722', '#673ab7', 
+    '#03a9f4', '#cddc39', '#ffeb3b', '#009688', '#fdd835', 
+    '#7b1fa2'
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+};
+
+const chartConfig = {
+  backgroundColor: '#ffffff',
+  backgroundGradientFrom: '#ffffff',
+  backgroundGradientTo: '#ffffff',
+  decimalPlaces: 0,
+  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+  style: {
+    borderRadius: 16,
+  },
+  propsForDots: {
+    r: '6',
+    strokeWidth: '2',
+    stroke: '#ffa726',
+  },
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
     padding: 20,
+    backgroundColor: '#f5f5f5',
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: 'bold',
     marginBottom: 20,
+    textAlign: 'center',
+    color: '#333',
   },
-  row: {
+  cardRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    flexWrap: 'wrap',
+    marginBottom: 20,
   },
-  card: {
-    width: width * 0.42,
-    height: width * 0.42,
-    backgroundColor: '#4caf50',
-    borderRadius: width * 0.21, 
+  statCard: {
+    width: width * 0.4,
+    backgroundColor: '#fff',
+    borderRadius: 15,
     padding: 20,
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
-    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
-  cardTitle: {
+  statTitle: {
     fontSize: 16,
-    color: '#fff',
-    marginTop: 10,
-    textAlign: 'center',
+    color: '#888',
+    marginBottom: 10,
   },
-  cardValue: {
+  statValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  chartTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
-    marginTop: 5,
+    marginBottom: 10,
     textAlign: 'center',
-  },
-  bottomButtonContainer: {
-    marginTop: 30,
-    alignItems: 'center',
-  },
-  bottomButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#4caf50',
-    padding: 15,
-    borderRadius: 10,
-    width: '80%',
-    justifyContent: 'center',
-  },
-  bottomButtonText: {
-    fontSize: 18,
-    color: '#fff',
-    marginLeft: 10,
+    color: '#333',
   },
   loadingContainer: {
     flex: 1,
