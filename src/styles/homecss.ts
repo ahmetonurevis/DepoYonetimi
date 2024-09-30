@@ -1,0 +1,127 @@
+import { StyleSheet } from "react-native";
+
+export const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 16,
+      backgroundColor: '#f7f9fc',
+    },
+    summaryContainer: {
+      marginBottom: 20,
+    },
+    row: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 15,
+    },
+    card: {
+      flex: 1,
+      height: 150,
+      padding: 25,
+      borderRadius: 25,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 5,
+      elevation: 6,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.25,
+      shadowRadius: 7,
+    },
+    cardTitle: {
+      fontSize: 12,
+      color: '#fff',
+      fontWeight: '600',
+      marginTop: 10,
+    },
+    cardValue: {
+      fontSize: 32,
+      fontWeight: '700',
+      color: '#fff',
+    },
+    quickActions: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 25,
+    },
+    button: {
+      flex: 1,
+      backgroundColor: '#4A90E2',
+      paddingVertical: 14,
+      paddingHorizontal: 22,
+      borderRadius: 12,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 5,
+      elevation: 3,
+    },
+    buttonText: {
+      color: '#fff',
+      fontSize: 16,
+      marginLeft: 10,
+      fontWeight: '600',
+    },
+    sectionTitle: {
+      fontSize: 20,
+      marginBottom: 15,
+      fontWeight: '700',
+      color: '#333',
+    },
+    productItem: {
+      marginVertical: 10,
+      marginHorizontal: 8,
+      padding: 20,
+      borderRadius: 12,
+      backgroundColor: '#fff',
+      elevation: 5,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.18,
+      shadowRadius: 6,
+    },
+    productCard: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      backgroundColor: '#fff',
+      borderRadius: 12,
+      padding: 20,
+      marginVertical: 10,
+      elevation: 5,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.18,
+      shadowRadius: 6,
+    },
+    productInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    productIcon: {
+      marginRight: 10,
+    },
+    productName: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: '#333',
+    },
+    productDetails: {
+      alignItems: 'flex-end',
+    },
+    productStock: {
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    inStock: {
+      color: '#4CAF50',
+    },
+    outOfStock: {
+      color: '#E94E77',
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  });
