@@ -67,7 +67,7 @@ const HomeScreen: React.FC = () => {
 
     const unsubscribeLatestProducts = firestore()
       .collection('Products')
-      .orderBy('createdAt', 'asc')
+      .orderBy('createdAt', 'desc')
       .limit(3)
       .onSnapshot(snapshot => {
         if (snapshot && !snapshot.empty) {

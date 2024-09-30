@@ -11,6 +11,7 @@ interface Product {
   purchasePrice: number;
   salePrice: number;
   description: string;
+  
 }
 
 const ProductListScreen: React.FC = () => {
@@ -25,7 +26,10 @@ const ProductListScreen: React.FC = () => {
     const fetchProducts = async () => {
       try {
         const productList: Product[] = [];
-        const snapshot = await firestore().collection('Products').get();
+        const snapshot = await firestore()
+          .collection('Products')
+          .orderBy('createdAt', 'desc') 
+          .get();
         snapshot.forEach(doc => {
           const { productName, productStock, productPurchasePrice, productSalePrice, productDescription } = doc.data();
           productList.push({
