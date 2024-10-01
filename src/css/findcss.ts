@@ -4,68 +4,51 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
-    backgroundColor: '#f9f9f9',
-  },
-  balanceCard: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-  balanceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  balanceItem: {
-    alignItems: 'center',
-  },
-  balanceLabel: {
-    fontSize: 18,
-    color: '#888',
-  },
-  balanceValue: {
-    fontSize: 22,
-    fontWeight: 'bold',
-  },
-  chartTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  chart: {
-    borderRadius: 10,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    backgroundColor: '#f7f7f7',
   },
   statCard: {
     backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 15,
+    borderRadius: 12,
+    padding: 18,
     width: '30%',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 5,
-    elevation: 3,
+    shadowOpacity: 0.07,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 8,
+    elevation: 2,
+    marginHorizontal: 5,
   },
   statLabel: {
     fontSize: 16,
-    color: '#888',
+    color: '#555',
   },
   statValue: {
     fontSize: 22,
     fontWeight: 'bold',
     marginTop: 5,
+    color: '#333',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 20,
   },
   chartContainer: {
-    marginTop: 20,
+    marginTop: 25,
+  },
+  chartTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    color: '#333',
+  },
+  chart: {
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 1,
   },
 });
