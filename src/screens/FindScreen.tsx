@@ -80,7 +80,7 @@ const FindScreen = () => {
             barPercentage: 0.5,
           }}
           style={styles.chart}
-          />
+        />
       </View>
     </ScrollView>
   );
