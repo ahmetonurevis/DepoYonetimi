@@ -10,14 +10,14 @@ export const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: 18,
-    width: '30%',
+    width: 180,  
     alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.07,
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 8,
     elevation: 2,
-    marginHorizontal: 5,
+    marginHorizontal: 10,  
   },
   statLabel: {
     fontSize: 16,
@@ -31,8 +31,8 @@ export const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
     marginTop: 20,
+    paddingHorizontal: 10,  
   },
   chartContainer: {
     marginTop: 25,

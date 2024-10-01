@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Dimensions, ScrollView } from 'react-native';
-import { BarChart, PieChart } from 'react-native-chart-kit';
+import { BarChart } from 'react-native-chart-kit';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { styles } from '../css/findcss';
@@ -8,11 +8,10 @@ import { styles } from '../css/findcss';
 const screenWidth = Dimensions.get('window').width;
 
 const FindScreen = () => {
-  
+
   const stockIncreases = useSelector((state: RootState) => state.stock.stockIncreases);
   const stockDecreases = useSelector((state: RootState) => state.stock.stockDecreases);
   const products = useSelector((state: RootState) => state.stock.products);
-
 
   const totalIncome = stockDecreases.reduce((sum, item) => {
     const product = products.find(p => p.id === item.productId);
@@ -46,23 +45,32 @@ const FindScreen = () => {
     ],
   };
 
-
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
+      <ScrollView 
+        horizontal={true} 
+        style={styles.statsContainer} 
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 20 }} 
+        snapToAlignment="center"  
+        decelerationRate="fast"  
+        snapToInterval={220}  
+      >
+        <View style={[styles.statCard, { backgroundColor: '#4CAF50' }]}>
           <Text style={styles.statLabel}>Satışlar</Text>
           <Text style={styles.statValue}>₺{totalIncome}</Text>
-        </View>
-        <View style={styles.statCard}>
+        </View>        
+       
+        <View style={[styles.statCard, { backgroundColor: '#F44336' }]}>
           <Text style={styles.statLabel}>Giderler</Text>
           <Text style={styles.statValue}>₺{totalExpense}</Text>
-        </View>
-        <View style={styles.statCard}>
+        </View>       
+        
+        <View style={[styles.statCard, { backgroundColor: '#2196F3' }]}>
           <Text style={styles.statLabel}>Kâr</Text>
           <Text style={styles.statValue}>₺{totalProfit}</Text>
         </View>
-      </View>
+      </ScrollView>
 
       <View style={styles.chartContainer}>
         <Text style={styles.chartTitle}>Günlük Satışlar</Text>
