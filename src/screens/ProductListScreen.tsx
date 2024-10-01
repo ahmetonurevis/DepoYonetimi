@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Modal, TextInput, Button, Alert } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, Modal, TextInput, Button, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {styles}  from '../css/productlistcss';
+import { useDispatch } from 'react-redux';
+import { addStockIncrease, addStockDecrease } from '../redux/stockSlice';
+import { styles } from '../css/productlistcss';
 
 interface Product {
   id: string;
@@ -11,7 +13,6 @@ interface Product {
   purchasePrice: number;
   salePrice: number;
   description: string;
-  
 }
 
 const ProductListScreen: React.FC = () => {
@@ -21,6 +22,7 @@ const ProductListScreen: React.FC = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [newStock, setNewStock] = useState<string>('');
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -28,7 +30,7 @@ const ProductListScreen: React.FC = () => {
         const productList: Product[] = [];
         const snapshot = await firestore()
           .collection('Products')
-          .orderBy('createdAt', 'desc') 
+          .orderBy('createdAt', 'desc')
           .get();
         snapshot.forEach(doc => {
           const { productName, productStock, productPurchasePrice, productSalePrice, productDescription } = doc.data();
@@ -57,46 +59,77 @@ const ProductListScreen: React.FC = () => {
       Alert.alert('Hata', 'Lütfen geçerli bir stok miktarı giriniz.');
       return;
     }
-
+  
     try {
       const stockNumber = parseInt(newStock, 10);
       if (isNaN(stockNumber)) {
         Alert.alert('Hata', 'Stok miktarı sayısal bir değer olmalıdır.');
         return;
       }
-
+  
       let updatedStock = selectedProduct.stock;
-
+  
       if (action === 'add') {
         updatedStock += stockNumber;
+  
+        
+        dispatch(addStockIncrease({ productId: selectedProduct.id, changeAmount: stockNumber, timestamp: Date.now() }));
+  
+        
+        await firestore().collection('StockIncreases').add({
+          productId: selectedProduct.id,
+          changeAmount: stockNumber,
+          timestamp: firestore.FieldValue.serverTimestamp(),
+          purchasePrice: selectedProduct.purchasePrice, 
+        });
+  
       } else if (action === 'subtract') {
         if (selectedProduct.stock - stockNumber < 0) {
           Alert.alert('Hata', 'Stok miktarı sıfırdan az olamaz.');
           return;
         }
+  
         updatedStock -= stockNumber;
+  
+        
+        dispatch(addStockDecrease({ productId: selectedProduct.id, changeAmount: stockNumber, timestamp: Date.now() }));
+  
+        
+        
+          await firestore().collection('StockDecreases').add({
+            productId: selectedProduct.id,
+            changeAmount: stockNumber,
+            timestamp: firestore.FieldValue.serverTimestamp(),
+            salePrice: selectedProduct.salePrice, 
+          });
+          
+        
       }
-
+  
+      
       await firestore().collection('Products').doc(selectedProduct.id).update({
         productStock: updatedStock,
       });
-
+  
+      
       setProducts(prevProducts => prevProducts.map(product =>
         product.id === selectedProduct.id ? { ...product, stock: updatedStock } : product
       ));
-
+  
       setModalVisible(false);
       setSelectedProduct(null);
       setNewStock('');
+  
       Alert.alert('Başarılı', `Stok miktarı ${action === 'add' ? 'artırıldı' : 'azaltıldı'}.`);
     } catch (error) {
+      console.error('Hata:', error);
       Alert.alert('Hata', 'Stok güncellenirken bir hata oluştu.');
     }
   };
 
   const openModal = (product: Product) => {
     setSelectedProduct(product);
-    setNewStock(''); // Yeni stok değeri sıfırlanır
+    setNewStock('');
     setModalVisible(true);
   };
 
@@ -201,6 +234,5 @@ const ProductListScreen: React.FC = () => {
     </View>
   );
 };
-
 
 export default ProductListScreen;

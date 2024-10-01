@@ -1,53 +1,89 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
-import { BarChart } from 'react-native-chart-kit';
+import { View, Text, Dimensions, ScrollView } from 'react-native';
+import { BarChart, PieChart } from 'react-native-chart-kit';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 import { styles } from '../css/findcss';
 
 const screenWidth = Dimensions.get('window').width;
 
 const FindScreen = () => {
+  
+  const stockIncreases = useSelector((state: RootState) => state.stock.stockIncreases);
+  const stockDecreases = useSelector((state: RootState) => state.stock.stockDecreases);
+  const products = useSelector((state: RootState) => state.stock.products);
+
+
+  const totalIncome = stockDecreases.reduce((sum, item) => {
+    const product = products.find(p => p.id === item.productId);
+    return sum + (product ? product.salePrice * item.changeAmount : 0);
+  }, 0);
+
+  const totalExpense = stockIncreases.reduce((sum, item) => {
+    const product = products.find(p => p.id === item.productId);
+    return sum + (product ? product.purchasePrice * item.changeAmount : 0);
+  }, 0);
+
+  const totalProfit = totalIncome - totalExpense;
+
+  const barData = {
+    labels: stockIncreases.map(item => new Date(item.timestamp).toLocaleDateString()),
+    datasets: [
+      {
+        data: stockIncreases.map(item => {
+          const product = products.find(p => p.id === item.productId);
+          return product ? product.purchasePrice * item.changeAmount : 0;
+        }),
+        color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
+      },
+      {
+        data: stockDecreases.map(item => {
+          const product = products.find(p => p.id === item.productId);
+          return product ? product.salePrice * item.changeAmount : 0;
+        }),
+        color: (opacity = 1) => `rgba(0, 128, 0, ${opacity})`,
+      },
+    ],
+  };
+
+
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.balanceCard}>
-        <Text style={styles.title}>Statistic</Text>
-        <View style={styles.balanceRow}>
-          <View style={styles.balanceItem}>
-            <Text style={styles.balanceLabel}>Income</Text>
-            <Text style={styles.balanceValue}>$5,440</Text>
-          </View>
-          <View style={styles.balanceItem}>
-            <Text style={styles.balanceLabel}>Expense</Text>
-            <Text style={styles.balanceValue}>$2,209</Text>
-          </View>
+      <View style={styles.statsContainer}>
+        <View style={styles.statCard}>
+          <Text style={styles.statLabel}>Satışlar</Text>
+          <Text style={styles.statValue}>₺{totalIncome}</Text>
+        </View>
+        <View style={styles.statCard}>
+          <Text style={styles.statLabel}>Giderler</Text>
+          <Text style={styles.statValue}>₺{totalExpense}</Text>
+        </View>
+        <View style={styles.statCard}>
+          <Text style={styles.statLabel}>Kâr</Text>
+          <Text style={styles.statValue}>₺{totalProfit}</Text>
         </View>
       </View>
 
-      <Text style={styles.chartTitle}>Statistic Overview</Text>
-      <BarChart
-        data={{
-          labels: ['Nov 1', 'Nov 10', 'Nov 20', 'Nov 30'],
-          datasets: [
-            {
-              data: [2000, 3156, 1500, 4200],
-            },
-          ],
-        }}
-        width={screenWidth - 30}
-        height={220}
-        chartConfig={{
-          backgroundColor: '#fff',
-          backgroundGradientFrom: '#fff',
-          backgroundGradientTo: '#fff',
-          decimalPlaces: 2,
-          color: (opacity = 1) => `rgba(0, 128, 0, ${opacity})`,
-          labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-        }}
-        style={styles.chart}
-      />
+      <View style={styles.chartContainer}>
+        <Text style={styles.chartTitle}>Günlük Satışlar</Text>
+        <BarChart
+          data={barData}
+          width={screenWidth - 30}
+          height={220}
+          chartConfig={{
+            backgroundColor: '#fff',
+            backgroundGradientFrom: '#fff',
+            backgroundGradientTo: '#fff',
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+            barPercentage: 0.5,
+          }}
+          style={styles.chart}
+        />
+      </View>
     </ScrollView>
   );
 };
-
-
 
 export default FindScreen;

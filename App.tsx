@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Animated, Dimensions, Easing, PanResponder, KeyboardAvoidingView, SafeAreaView, StatusBar, StyleSheet, BackHandler, Alert, Text, View } from 'react-native';
+import { Animated, Dimensions, Easing, PanResponder, KeyboardAvoidingView, SafeAreaView, StatusBar, StyleSheet, BackHandler, Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import HeaderComponent from './src/components/HeaderComponent';
 import MenuComponent from './src/components/MenuComponent';
 import MainContentComponent from './src/components/MainContentComponent';
+import { Provider } from 'react-redux'; 
+import { store } from './src/redux/store'; 
 
 const { width } = Dimensions.get('window');
 
@@ -68,23 +70,24 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <NavigationContainer>
-      <KeyboardAvoidingView style={styles.container} behavior="height" keyboardVerticalOffset={0}>
-        <SafeAreaView style={styles.container}>
-          <StatusBar barStyle="dark-content" />
-          <HeaderComponent toggleAnimation={toggleAnimation} search={search} updateSearch={updateSearch} anim={anim} />
-          <MainContentComponent />
-          <MenuComponent
-            open={open}
-            toggleAnimation={toggleAnimation}
-            panResponder={panResponder}
-            pan={pan}
-            sheetAnimationStyle={sheetAnimationStyle}
-          />
-          
-        </SafeAreaView>
-      </KeyboardAvoidingView>
-    </NavigationContainer>
+    <Provider store={store}> 
+      <NavigationContainer>
+        <KeyboardAvoidingView style={styles.container} behavior="height" keyboardVerticalOffset={0}>
+          <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="dark-content" />
+            <HeaderComponent toggleAnimation={toggleAnimation} search={search} updateSearch={updateSearch} anim={anim} />
+            <MainContentComponent />
+            <MenuComponent
+              open={open}
+              toggleAnimation={toggleAnimation}
+              panResponder={panResponder}
+              pan={pan}
+              sheetAnimationStyle={sheetAnimationStyle}
+            />
+          </SafeAreaView>
+        </KeyboardAvoidingView>
+      </NavigationContainer>
+    </Provider>
   );
 };
 
