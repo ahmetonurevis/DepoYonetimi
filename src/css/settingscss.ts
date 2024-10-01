@@ -37,11 +37,12 @@ export const lightStyles = StyleSheet.create({
       marginLeft: 80,
     },
     settingsText: {
+      color: '#000000',
       fontSize: 18,
     },
     settingsSubText: {
       fontSize: 16,
-      color: '#888',
+      color: '#000',
     },
   });
   
