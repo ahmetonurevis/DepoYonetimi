@@ -102,6 +102,11 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
   },
+  modalText: {
+    fontSize: 16,
+    color: '#000',  
+    marginBottom: 8,  
+  },
   modalButton: {
     flex: 1,
     padding: 12,

@@ -59,67 +59,67 @@ const ProductListScreen: React.FC = () => {
       Alert.alert('Hata', 'Lütfen geçerli bir stok miktarı giriniz.');
       return;
     }
-  
+
     try {
       const stockNumber = parseInt(newStock, 10);
       if (isNaN(stockNumber)) {
         Alert.alert('Hata', 'Stok miktarı sayısal bir değer olmalıdır.');
         return;
       }
-  
+
       let updatedStock = selectedProduct.stock;
-  
+
       if (action === 'add') {
         updatedStock += stockNumber;
-  
-        
+
+
         dispatch(addStockIncrease({ productId: selectedProduct.id, changeAmount: stockNumber, timestamp: Date.now() }));
-  
-        
+
+
         await firestore().collection('StockIncreases').add({
           productId: selectedProduct.id,
           changeAmount: stockNumber,
           timestamp: firestore.FieldValue.serverTimestamp(),
-          purchasePrice: selectedProduct.purchasePrice, 
+          purchasePrice: selectedProduct.purchasePrice,
         });
-  
+
       } else if (action === 'subtract') {
         if (selectedProduct.stock - stockNumber < 0) {
           Alert.alert('Hata', 'Stok miktarı sıfırdan az olamaz.');
           return;
         }
-  
+
         updatedStock -= stockNumber;
-  
-        
+
+
         dispatch(addStockDecrease({ productId: selectedProduct.id, changeAmount: stockNumber, timestamp: Date.now() }));
-  
-        
-        
-          await firestore().collection('StockDecreases').add({
-            productId: selectedProduct.id,
-            changeAmount: stockNumber,
-            timestamp: firestore.FieldValue.serverTimestamp(),
-            salePrice: selectedProduct.salePrice, 
-          });
-          
-        
+
+
+
+        await firestore().collection('StockDecreases').add({
+          productId: selectedProduct.id,
+          changeAmount: stockNumber,
+          timestamp: firestore.FieldValue.serverTimestamp(),
+          salePrice: selectedProduct.salePrice,
+        });
+
+
       }
-  
-      
+
+
       await firestore().collection('Products').doc(selectedProduct.id).update({
         productStock: updatedStock,
       });
-  
-      
+
+
       setProducts(prevProducts => prevProducts.map(product =>
         product.id === selectedProduct.id ? { ...product, stock: updatedStock } : product
       ));
-  
+
       setModalVisible(false);
       setSelectedProduct(null);
       setNewStock('');
-  
+
       Alert.alert('Başarılı', `Stok miktarı ${action === 'add' ? 'artırıldı' : 'azaltıldı'}.`);
     } catch (error) {
       console.error('Hata:', error);
@@ -221,10 +221,10 @@ const ProductListScreen: React.FC = () => {
               <View style={styles.modalContent}>
                 <Text style={styles.modalTitle}>Ürün Detayları</Text>
                 <Text style={styles.modalProductName}>{selectedProduct.name}</Text>
-                <Text>Stok: {selectedProduct.stock} adet</Text>
-                <Text>Alış Fiyatı: {selectedProduct.purchasePrice} ₺</Text>
-                <Text>Satış Fiyatı: {selectedProduct.salePrice} ₺</Text>
-                <Text>Açıklama: {selectedProduct.description}</Text>
+                <Text style={styles.modalText}>Stok: {selectedProduct.stock} adet</Text>
+                <Text style={styles.modalText}>Alış Fiyatı: {selectedProduct.purchasePrice} ₺</Text>
+                <Text style={styles.modalText}>Satış Fiyatı: {selectedProduct.salePrice} ₺</Text>
+                <Text style={styles.modalText}>Açıklama: {selectedProduct.description}</Text>
                 <Button title="Kapat" onPress={() => setDetailModalVisible(false)} />
               </View>
             </View>
