@@ -99,7 +99,7 @@ const FindScreen = () => {
             borderRadius: 16,
           }}
           showBarTops={false}
-          fromZero={true}          
+          fromZero={true}
         />
       </View>
     </ScrollView>
