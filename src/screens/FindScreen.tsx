@@ -48,6 +48,10 @@ const FindScreen = () => {
     };
   }, [totalExpense]);
 
+  console.log('Gelirler:', totalIncome);
+  console.log('Giderler:', totalExpense);
+  console.log('Kar/Zarar:', totalProfit);
+
   const barData = {
     labels: timestamps.length > 0 ? timestamps : ['Gelirler', 'Giderler'], 
     datasets: [
