@@ -10,16 +10,25 @@ const FindScreen = () => {
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
   const [totalProfit, setTotalProfit] = useState(0);
+  const [timestamps, setTimestamps] = useState([]); 
 
   useEffect(() => {
     const unsubscribeIncreases = firestore().collection('StockIncreases').onSnapshot(snapshot => {
       let expense = 0;
+      let newTimestamps = []; 
       snapshot.forEach(doc => {
         const data = doc.data();
         const totalAmount = data.totalAmount || 0;
+        const timestamp = data.timestamp ? data.timestamp.toDate() : null; 
+
+        if (timestamp) {
+          newTimestamps.push(timestamp.toLocaleDateString()); 
+        }
+
         expense += totalAmount;
       });
       setTotalExpense(expense);
+      setTimestamps(newTimestamps); 
     });
 
     const unsubscribeDecreases = firestore().collection('StockDecreases').onSnapshot(snapshot => {
@@ -40,7 +49,7 @@ const FindScreen = () => {
   }, [totalExpense]);
 
   const barData = {
-    labels: ['Gelirler', 'Giderler'],
+    labels: timestamps.length > 0 ? timestamps : ['Gelirler', 'Giderler'], 
     datasets: [
       {
         data: [totalIncome, totalExpense],
@@ -79,20 +88,20 @@ const FindScreen = () => {
           width={screenWidth - 30}
           height={220}
           yAxisSuffix="₺"
-          yAxisInterval={1} 
+          yAxisInterval={1}
           chartConfig={{
             backgroundColor: '#ffffff',
             backgroundGradientFrom: '#ffffff',
             backgroundGradientTo: '#ffffff',
-            decimalPlaces: 0, 
-            color: (opacity = 1) => 'rgba(0, 0, 0, ' + opacity + ')', 
+            decimalPlaces: 0,
+            color: (opacity = 1) => 'rgba(0, 0, 0, ' + opacity + ')',
             labelColor: (opacity = 1) => 'rgba(0, 0, 0, ' + opacity + ')',
-            barPercentage: 0.5, 
-            barRadius: 5, 
+            barPercentage: 0.5,
+            barRadius: 5,
             propsForBackgroundLines: {
-              stroke: '#e3e3e3', 
-              strokeDasharray: '', 
-            },            
+              stroke: '#e3e3e3',
+              strokeDasharray: '',
+            },
           }}
           style={{
             marginVertical: 10,
@@ -100,6 +109,7 @@ const FindScreen = () => {
           }}
           showBarTops={false}
           fromZero={true}
+          verticalLabelRotation={10}
         />
       </View>
     </ScrollView>
