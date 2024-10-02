@@ -40,25 +40,24 @@ const FindScreen = () => {
   }, [totalExpense]);
 
   const barData = {
-    labels: ['Satışlar', 'Giderler'],
+    labels: ['Gelirler', 'Giderler'],
     datasets: [
       {
         data: [totalIncome, totalExpense],
-        colors: [(opacity: number) => `rgba(0, 255, 0, ${opacity})`, (opacity: number) => `rgba(255, 0, 0, ${opacity})`],
       },
     ],
   };
 
   return (
     <ScrollView style={styles.container}>
-      <ScrollView 
-        horizontal 
-        style={styles.statsContainer} 
+      <ScrollView
+        horizontal
+        style={styles.statsContainer}
         contentContainerStyle={{ paddingHorizontal: 20 }}
         showsHorizontalScrollIndicator={false}
       >
         <View style={[styles.statCard, { backgroundColor: '#4CAF50' }]}>
-          <Text style={styles.statLabel}>Satışlar</Text>
+          <Text style={styles.statLabel}>Gelirler</Text>
           <Text style={styles.statValue}>₺{totalIncome}</Text>
         </View>
 
@@ -68,27 +67,38 @@ const FindScreen = () => {
         </View>
 
         <View style={[styles.statCard, { backgroundColor: totalProfit >= 0 ? '#2196F3' : '#F44336' }]}>
-          <Text style={styles.statLabel}>{totalProfit >= 0 ? 'Kâr' : 'Zarar'}</Text>
+          <Text style={styles.statLabel}>{totalProfit >= 0 ? 'Kar' : 'Zarar'}</Text>
           <Text style={styles.statValue}>₺{totalProfit}</Text>
         </View>
       </ScrollView>
 
       <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>Satış ve Gider Grafiği</Text>
+        <Text style={styles.chartTitle}>Gelir ve Gider Grafiği</Text>
         <BarChart
           data={barData}
           width={screenWidth - 30}
           height={220}
+          yAxisSuffix="₺"
+          yAxisInterval={1} 
           chartConfig={{
-            backgroundColor: '#fff',
-            backgroundGradientFrom: '#fff',
-            backgroundGradientTo: '#fff',
-            decimalPlaces: 0,
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            barPercentage: 0.5,
+            backgroundColor: '#ffffff',
+            backgroundGradientFrom: '#ffffff',
+            backgroundGradientTo: '#ffffff',
+            decimalPlaces: 0, 
+            color: (opacity = 1) => 'rgba(0, 0, 0, ' + opacity + ')', 
+            labelColor: (opacity = 1) => 'rgba(0, 0, 0, ' + opacity + ')',
+            barPercentage: 0.5, 
+            barRadius: 5, 
+            propsForBackgroundLines: {
+              stroke: '#e3e3e3', 
+              strokeDasharray: '', 
+            },            
           }}
-          style={styles.chart}
+          style={{
+            marginVertical: 10,
+            borderRadius: 16,
+          }}
+          fromZero={true}          
         />
       </View>
     </ScrollView>
