@@ -1,46 +1,50 @@
-import React from 'react';
-import { View, Text, Dimensions, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, View, Text, Dimensions } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
-import { useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
+import firestore from '@react-native-firebase/firestore';
 import { styles } from '../css/findcss';
 
 const screenWidth = Dimensions.get('window').width;
 
 const FindScreen = () => {
+  const [totalIncome, setTotalIncome] = useState(0);
+  const [totalExpense, setTotalExpense] = useState(0);
+  const [totalProfit, setTotalProfit] = useState(0);
 
-  const stockIncreases = useSelector((state: RootState) => state.stock.stockIncreases);
-  const stockDecreases = useSelector((state: RootState) => state.stock.stockDecreases);
-  const products = useSelector((state: RootState) => state.stock.products);
+  useEffect(() => {
+    const unsubscribeIncreases = firestore().collection('StockIncreases').onSnapshot(snapshot => {
+      let expense = 0;
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const totalAmount = data.totalAmount || 0;
+        expense += totalAmount;
+      });
+      setTotalExpense(expense);
+    });
 
-  const totalIncome = stockDecreases.reduce((sum, item) => {
-    const product = products.find(p => p.id === item.productId);
-    return sum + (product ? product.salePrice * item.changeAmount : 0);
-  }, 0);
+    const unsubscribeDecreases = firestore().collection('StockDecreases').onSnapshot(snapshot => {
+      let income = 0;
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const totalAmount = data.totalAmount || 0;
+        income += totalAmount;
+      });
+      setTotalIncome(income);
+      setTotalProfit(income - totalExpense);
+    });
 
-  const totalExpense = stockIncreases.reduce((sum, item) => {
-    const product = products.find(p => p.id === item.productId);
-    return sum + (product ? product.purchasePrice * item.changeAmount : 0);
-  }, 0);
-
-  const totalProfit = totalIncome - totalExpense;
+    return () => {
+      unsubscribeIncreases();
+      unsubscribeDecreases();
+    };
+  }, [totalExpense]);
 
   const barData = {
-    labels: stockIncreases.map(item => new Date(item.timestamp).toLocaleDateString()),
+    labels: ['Satışlar', 'Giderler'],
     datasets: [
       {
-        data: stockIncreases.map(item => {
-          const product = products.find(p => p.id === item.productId);
-          return product ? product.purchasePrice * item.changeAmount : 0;
-        }),
-        color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
-      },
-      {
-        data: stockDecreases.map(item => {
-          const product = products.find(p => p.id === item.productId);
-          return product ? product.salePrice * item.changeAmount : 0;
-        }),
-        color: (opacity = 1) => `rgba(0, 128, 0, ${opacity})`,
+        data: [totalIncome, totalExpense],
+        colors: [(opacity: number) => `rgba(0, 255, 0, ${opacity})`, (opacity: number) => `rgba(255, 0, 0, ${opacity})`],
       },
     ],
   };
@@ -48,32 +52,29 @@ const FindScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <ScrollView 
-        horizontal={true} 
+        horizontal 
         style={styles.statsContainer} 
+        contentContainerStyle={{ paddingHorizontal: 20 }}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 20 }} 
-        snapToAlignment="center"  
-        decelerationRate="fast"  
-        snapToInterval={220}  
       >
         <View style={[styles.statCard, { backgroundColor: '#4CAF50' }]}>
           <Text style={styles.statLabel}>Satışlar</Text>
           <Text style={styles.statValue}>₺{totalIncome}</Text>
-        </View>        
-       
+        </View>
+
         <View style={[styles.statCard, { backgroundColor: '#F44336' }]}>
           <Text style={styles.statLabel}>Giderler</Text>
           <Text style={styles.statValue}>₺{totalExpense}</Text>
-        </View>       
-        
-        <View style={[styles.statCard, { backgroundColor: '#2196F3' }]}>
-          <Text style={styles.statLabel}>Kâr</Text>
+        </View>
+
+        <View style={[styles.statCard, { backgroundColor: totalProfit >= 0 ? '#2196F3' : '#F44336' }]}>
+          <Text style={styles.statLabel}>{totalProfit >= 0 ? 'Kâr' : 'Zarar'}</Text>
           <Text style={styles.statValue}>₺{totalProfit}</Text>
         </View>
       </ScrollView>
 
       <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>Günlük Satışlar</Text>
+        <Text style={styles.chartTitle}>Satış ve Gider Grafiği</Text>
         <BarChart
           data={barData}
           width={screenWidth - 30}

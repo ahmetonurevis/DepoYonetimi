@@ -24,14 +24,12 @@ const ProductListScreen: React.FC = () => {
   const [newStock, setNewStock] = useState<string>('');
   const dispatch = useDispatch();
 
+  
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
+    const unsubscribe = firestore()
+      .collection('Products')
+      .onSnapshot(snapshot => {
         const productList: Product[] = [];
-        const snapshot = await firestore()
-          .collection('Products')
-          .orderBy('createdAt', 'desc')
-          .get();
         snapshot.forEach(doc => {
           const { productName, productStock, productPurchasePrice, productSalePrice, productDescription } = doc.data();
           productList.push({
@@ -43,15 +41,12 @@ const ProductListScreen: React.FC = () => {
             description: productDescription,
           });
         });
+        console.log("Real-time data updated:", productList);
         setProducts(productList);
-      } catch (error) {
-        console.error("Error fetching products: ", error);
-      } finally {
         setLoading(false);
-      }
-    };
+      });
 
-    fetchProducts();
+    return () => unsubscribe(); 
   }, []);
 
   const handleUpdateStock = async (action: 'add' | 'subtract') => {
@@ -68,19 +63,20 @@ const ProductListScreen: React.FC = () => {
       }
 
       let updatedStock = selectedProduct.stock;
+      let totalAmount = 0;
 
       if (action === 'add') {
         updatedStock += stockNumber;
-
+        totalAmount = stockNumber * selectedProduct.purchasePrice;
 
         dispatch(addStockIncrease({ productId: selectedProduct.id, changeAmount: stockNumber, timestamp: Date.now() }));
-
 
         await firestore().collection('StockIncreases').add({
           productId: selectedProduct.id,
           changeAmount: stockNumber,
           timestamp: firestore.FieldValue.serverTimestamp(),
           purchasePrice: selectedProduct.purchasePrice,
+          totalAmount: totalAmount,
         });
 
       } else if (action === 'subtract') {
@@ -90,31 +86,22 @@ const ProductListScreen: React.FC = () => {
         }
 
         updatedStock -= stockNumber;
-
+        totalAmount = stockNumber * selectedProduct.salePrice;
 
         dispatch(addStockDecrease({ productId: selectedProduct.id, changeAmount: stockNumber, timestamp: Date.now() }));
-
-
 
         await firestore().collection('StockDecreases').add({
           productId: selectedProduct.id,
           changeAmount: stockNumber,
           timestamp: firestore.FieldValue.serverTimestamp(),
           salePrice: selectedProduct.salePrice,
+          totalAmount: totalAmount,
         });
-
-
       }
-
 
       await firestore().collection('Products').doc(selectedProduct.id).update({
         productStock: updatedStock,
       });
-
-
-      setProducts(prevProducts => prevProducts.map(product =>
-        product.id === selectedProduct.id ? { ...product, stock: updatedStock } : product
-      ));
 
       setModalVisible(false);
       setSelectedProduct(null);
@@ -122,7 +109,7 @@ const ProductListScreen: React.FC = () => {
 
       Alert.alert('Başarılı', `Stok miktarı ${action === 'add' ? 'artırıldı' : 'azaltıldı'}.`);
     } catch (error) {
-      console.error('Hata:', error);
+      console.error('Error updating stock:', error);
       Alert.alert('Hata', 'Stok güncellenirken bir hata oluştu.');
     }
   };
