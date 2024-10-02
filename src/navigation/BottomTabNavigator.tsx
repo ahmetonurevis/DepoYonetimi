@@ -150,6 +150,7 @@ const BottomTabNavigator: React.FC = () => {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ focused }) => (
+            <View style={{ alignItems: 'center', justifyContent: 'center', top: 10 }}>
             <Image
               source={require('../assets/icons/profile.png')}
               resizeMode="contain"
@@ -159,6 +160,10 @@ const BottomTabNavigator: React.FC = () => {
                 tintColor: '#fff',
               }}
             />
+            <Text style={{color: focused ? '#e32f45 ' : '#748c94', fontSize: 12}}>
+              Profile
+            </Text>
+            </View>
           ),
           tabBarButton: (props) => <CustomTabBarButton {...props} />,
         }}
