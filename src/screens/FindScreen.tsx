@@ -98,6 +98,7 @@ const FindScreen = () => {
             marginVertical: 10,
             borderRadius: 16,
           }}
+          showBarTops={false}
           fromZero={true}          
         />
       </View>
