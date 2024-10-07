@@ -4,7 +4,7 @@ import firestore from '@react-native-firebase/firestore';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
 import { addStockIncrease, addStockDecrease } from '../redux/stockSlice';
-import { Picker } from '@react-native-picker/picker'; // Dropdown için eklendi
+import { Picker } from '@react-native-picker/picker';
 import { styles } from '../css/productlistcss';
 
 interface Product {
@@ -20,7 +20,7 @@ interface Product {
 const ProductListScreen: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [categories, setCategories] = useState<string[]>(['Tümü']); 
+  const [categories, setCategories] = useState<string[]>(['Tümü']);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
@@ -28,34 +28,32 @@ const ProductListScreen: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('Tümü');
   const dispatch = useDispatch();
 
-  
   useEffect(() => {
-    const fetchCategories = async () => {
-      const categoryList: string[] = ['Tümü']; 
-      try {
-        const categorySnapshot = await firestore().collection('Category').get();
-        categorySnapshot.forEach(doc => {
-          const { category } = doc.data();
-          categoryList.push(category);
-        });
-        setCategories(categoryList); 
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
+    const unsubscribe = firestore().collection('Category').onSnapshot(snapshot => {
+      const categoryList: string[] = ['Tümü'];
+      snapshot.forEach(doc => {
+        const { category } = doc.data();
+        categoryList.push(category);
+      });
+      setCategories(categoryList);
+    }, error => {
+      console.error('Error fetching categories:', error);
+    });
 
-    fetchCategories(); 
+    return () => unsubscribe();
   }, []);
 
-  
   useEffect(() => {
     const fetchProducts = async () => {
-      let query = firestore().collection('Products');
-
-      if (selectedCategory !== 'Tümü') {
-        query = query.where('category', '==', selectedCategory);
+      let collectionRef = firestore().collection('Products');
+      let query;
+  
+      if (selectedCategory === 'Tümü') {
+        query = collectionRef;
+      } else {
+        query = collectionRef.where('category', '==', selectedCategory);
       }
-
+  
       const unsubscribe = query.onSnapshot(snapshot => {
         const productList: Product[] = [];
         snapshot.forEach(doc => {
@@ -73,10 +71,10 @@ const ProductListScreen: React.FC = () => {
         setProducts(productList);
         setLoading(false);
       });
-
+  
       return () => unsubscribe();
     };
-
+  
     fetchProducts();
   }, [selectedCategory]);
 
@@ -167,7 +165,6 @@ const ProductListScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Kategori seçimi */}
       <Picker
         selectedValue={selectedCategory}
         onValueChange={(itemValue) => setSelectedCategory(itemValue)}
@@ -207,58 +204,59 @@ const ProductListScreen: React.FC = () => {
       />
 
       {selectedProduct && (
-        <>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => setModalVisible(false)}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>Stok Düzenle</Text>
-                <Text style={styles.modalProductName}>{selectedProduct.name}</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Yeni stok miktarı"
-                  value={newStock}
-                  onChangeText={setNewStock}
-                  keyboardType="numeric"
-                />
-                <View style={styles.buttonContainer}>
-                  <TouchableOpacity style={[styles.modalButton, styles.updateButton]} onPress={() => handleUpdateStock('add')}>
-                    <Text style={styles.modalButtonText}>Stok Ekle</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={[styles.modalButton, styles.subtractButton]} onPress={() => handleUpdateStock('subtract')}>
-                    <Text style={styles.modalButtonText}>Stok Düş</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={[styles.modalButton, styles.cancelButton]} onPress={() => setModalVisible(false)}>
-                    <Text style={styles.modalButtonText}>İptal</Text>
-                  </TouchableOpacity>
-                </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Stok Düzenle</Text>
+              <Text style={styles.modalProductName}>{selectedProduct.name}</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Yeni stok miktarı"
+                value={newStock}
+                onChangeText={setNewStock}
+                keyboardType="numeric"
+              />
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity style={[styles.modalButton, styles.updateButton]} onPress={() => handleUpdateStock('add')}>
+                  <Text style={styles.modalButtonText}>Stok Ekle</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modalButton, styles.subtractButton]} onPress={() => handleUpdateStock('subtract')}>
+                  <Text style={styles.modalButtonText}>Stok Düş</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modalButton, styles.cancelButton]} onPress={() => setModalVisible(false)}>
+                  <Text style={styles.modalButtonText}>İptal</Text>
+                </TouchableOpacity>
               </View>
             </View>
-          </Modal>
+          </View>
+        </Modal>
+      )}
 
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={detailModalVisible}
-            onRequestClose={() => setDetailModalVisible(false)}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>Ürün Detayları</Text>
-                <Text style={styles.modalProductName}>{selectedProduct.name}</Text>
-                <Text style={styles.modalText}>Stok: {selectedProduct.stock} adet</Text>
-                <Text style={styles.modalText}>Alış Fiyatı: {selectedProduct.purchasePrice} ₺</Text>
-                <Text style={styles.modalText}>Satış Fiyatı: {selectedProduct.salePrice} ₺</Text>
-                <Text style={styles.modalText}>Açıklama: {selectedProduct.description}</Text>
-                <Button title="Kapat" onPress={() => setDetailModalVisible(false)} />
-              </View>
+      {selectedProduct && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={detailModalVisible}
+          onRequestClose={() => setDetailModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Ürün Detayları</Text>
+              <Text style={styles.modalProductName}>{selectedProduct.name}</Text>
+              <Text style={styles.modalText}>Stok: {selectedProduct.stock} adet</Text>
+              <Text style={styles.modalText}>Alış Fiyatı: {selectedProduct.purchasePrice} ₺</Text>
+              <Text style={styles.modalText}>Satış Fiyatı: {selectedProduct.salePrice} ₺</Text>
+              <Text style={styles.modalText}>Kategori: {selectedProduct.category}</Text>
+              <Text style={styles.modalText}>Açıklama: {selectedProduct.description}</Text>
+              <Button title="Kapat" onPress={() => setDetailModalVisible(false)} />
             </View>
-          </Modal>
-        </>
+          </View>
+        </Modal>
       )}
     </View>
   );
