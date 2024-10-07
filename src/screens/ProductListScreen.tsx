@@ -4,6 +4,7 @@ import firestore from '@react-native-firebase/firestore';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
 import { addStockIncrease, addStockDecrease } from '../redux/stockSlice';
+import { Picker } from '@react-native-picker/picker'; // Dropdown için eklendi
 import { styles } from '../css/productlistcss';
 
 interface Product {
@@ -13,25 +14,52 @@ interface Product {
   purchasePrice: number;
   salePrice: number;
   description: string;
+  category: string;
 }
 
 const ProductListScreen: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [categories, setCategories] = useState<string[]>(['Tümü']); 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [newStock, setNewStock] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('Tümü');
   const dispatch = useDispatch();
 
   
   useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('Products')
-      .onSnapshot(snapshot => {
+    const fetchCategories = async () => {
+      const categoryList: string[] = ['Tümü']; 
+      try {
+        const categorySnapshot = await firestore().collection('Category').get();
+        categorySnapshot.forEach(doc => {
+          const { category } = doc.data();
+          categoryList.push(category);
+        });
+        setCategories(categoryList); 
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories(); 
+  }, []);
+
+  
+  useEffect(() => {
+    const fetchProducts = async () => {
+      let query = firestore().collection('Products');
+
+      if (selectedCategory !== 'Tümü') {
+        query = query.where('category', '==', selectedCategory);
+      }
+
+      const unsubscribe = query.onSnapshot(snapshot => {
         const productList: Product[] = [];
         snapshot.forEach(doc => {
-          const { productName, productStock, productPurchasePrice, productSalePrice, productDescription } = doc.data();
+          const { productName, productStock, productPurchasePrice, productSalePrice, productDescription, category } = doc.data();
           productList.push({
             id: doc.id,
             name: productName,
@@ -39,15 +67,18 @@ const ProductListScreen: React.FC = () => {
             purchasePrice: productPurchasePrice,
             salePrice: productSalePrice,
             description: productDescription,
+            category: category,
           });
         });
-        console.log("Real-time data updated:", productList);
         setProducts(productList);
         setLoading(false);
       });
 
-    return () => unsubscribe(); 
-  }, []);
+      return () => unsubscribe();
+    };
+
+    fetchProducts();
+  }, [selectedCategory]);
 
   const handleUpdateStock = async (action: 'add' | 'subtract') => {
     if (!selectedProduct || newStock === '') {
@@ -136,6 +167,17 @@ const ProductListScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      {/* Kategori seçimi */}
+      <Picker
+        selectedValue={selectedCategory}
+        onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+        style={{ height: 50, width: '100%' }}
+      >
+        {categories.map(category => (
+          <Picker.Item key={category} label={category} value={category} />
+        ))}
+      </Picker>
+
       <FlatList
         data={products}
         keyExtractor={(item) => item.id}
