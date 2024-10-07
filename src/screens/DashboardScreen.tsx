@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, ActivityIndicator, ScrollView, Dimensions } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import firestore from '@react-native-firebase/firestore';
 import { styles, chartConfig, getRandomColor } from '../css/dashboardcss';
@@ -19,7 +19,6 @@ const DashboardScreen = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    
     const unsubscribe = firestore()
       .collection('Products')
       .onSnapshot(snapshot => {
@@ -52,14 +51,12 @@ const DashboardScreen = () => {
     );
   }
 
-
   const pieData = products.map((product) => ({
     name: product.name,
     population: product.stock,
     color: getRandomColor(),
     legendFontColor: '#333',
     legendFontSize: 12,
-    
   }));
 
   return (
@@ -79,7 +76,6 @@ const DashboardScreen = () => {
         </View>
       </View>
 
-     
       <Text style={styles.chartTitle}>Departman Satışları</Text>
       <PieChart
         data={pieData}
@@ -94,6 +90,5 @@ const DashboardScreen = () => {
     </ScrollView>
   );
 };
-
 
 export default DashboardScreen;
