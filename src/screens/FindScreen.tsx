@@ -6,47 +6,98 @@ import { styles } from '../css/findcss';
 
 const screenWidth = Dimensions.get('window').width;
 
+interface DataMap {
+  income: number;
+  expense: number;
+}
+
 const FindScreen = () => {
+  const [barData, setBarData] = useState({
+    labels: [] as string[],
+    datasets: [{ data: [] as number[] }, { data: [] as number[] }],
+  });
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
   const [totalProfit, setTotalProfit] = useState(0);
 
   useEffect(() => {
-    const unsubscribeIncreases = firestore().collection('StockIncreases').onSnapshot(snapshot => {
-      let expense = 0;
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const totalAmount = data.totalAmount || 0;
-        expense += totalAmount;
-      });
-      setTotalExpense(expense);
-    });
+    const dataMap: Record<string, DataMap> = {};
 
-    const unsubscribeDecreases = firestore().collection('StockDecreases').onSnapshot(snapshot => {
-      let income = 0;
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const totalAmount = data.totalAmount || 0;
-        income += totalAmount;
+    const unsubscribeIncreases = firestore()
+      .collection('StockIncreases')
+      .onSnapshot((snapshot) => {
+        let totalExpenseSum = 0;
+
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data && data.timestamp) {
+            const date = new Date(data.timestamp.seconds * 1000).toLocaleDateString();
+            const totalAmount = data.totalAmount || 0;
+
+            if (!dataMap[date]) {
+              dataMap[date] = { income: 0, expense: 0 };
+            }
+            dataMap[date].expense += totalAmount;
+            totalExpenseSum += totalAmount;
+          }
+        });
+
+        setTotalExpense(totalExpenseSum);
+        updateBarData(dataMap);
       });
-      setTotalIncome(income);
-      setTotalProfit(income - totalExpense);
-    });
+
+    const unsubscribeDecreases = firestore()
+      .collection('StockDecreases')
+      .onSnapshot((snapshot) => {
+        let totalIncomeSum = 0;
+
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data && data.timestamp) {
+            const date = new Date(data.timestamp.seconds * 1000).toLocaleDateString();
+            const totalAmount = data.totalAmount || 0;
+
+            if (!dataMap[date]) {
+              dataMap[date] = { income: 0, expense: 0 };
+            }
+            dataMap[date].income += totalAmount;
+            totalIncomeSum += totalAmount;
+          }
+        });
+
+        setTotalIncome(totalIncomeSum);
+        setTotalProfit(totalIncomeSum - totalExpense);
+        updateBarData(dataMap);
+      });
+
+    const updateBarData = (dataMap: Record<string, DataMap>) => {
+      const labels: string[] = [];
+      const incomeData: number[] = [];
+      const expenseData: number[] = [];
+
+      Object.keys(dataMap).forEach((date) => {
+        const { income, expense } = dataMap[date];
+        if (income > 0 || expense > 0) {
+          labels.push(date);
+          incomeData.push(income);
+          expenseData.push(expense);
+        }
+      });
+
+      setBarData({
+        labels,
+        datasets: [
+          { data: incomeData },
+          { data: expenseData },
+        ],
+      });
+    };
 
     return () => {
       unsubscribeIncreases();
       unsubscribeDecreases();
     };
   }, [totalExpense]);
-
-  const barData = {
-    labels: ['Gelirler', 'Giderler'],
-    datasets: [
-      {
-        data: [totalIncome, totalExpense],
-      },
-    ],
-  };
 
   return (
     <ScrollView style={styles.container}>
@@ -75,24 +126,30 @@ const FindScreen = () => {
       <View style={styles.chartContainer}>
         <Text style={styles.chartTitle}>Gelir ve Gider Grafiği</Text>
         <BarChart
-          data={barData}
+          data={{
+            labels: barData.labels,
+            datasets: [
+              { data: barData.datasets[0].data, color: () => '#4CAF50' },
+              { data: barData.datasets[1].data, color: () => '#F44336' },
+            ],
+          }}
           width={screenWidth - 30}
           height={220}
           yAxisSuffix="₺"
-          yAxisInterval={1} 
+          yAxisInterval={1}
           chartConfig={{
             backgroundColor: '#ffffff',
             backgroundGradientFrom: '#ffffff',
             backgroundGradientTo: '#ffffff',
-            decimalPlaces: 0, 
-            color: (opacity = 1) => 'rgba(0, 0, 0, ' + opacity + ')', 
-            labelColor: (opacity = 1) => 'rgba(0, 0, 0, ' + opacity + ')',
-            barPercentage: 0.5, 
-            barRadius: 5, 
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+            barPercentage: 0.5,
+            barRadius: 5,
             propsForBackgroundLines: {
-              stroke: '#e3e3e3', 
-              strokeDasharray: '', 
-            },            
+              stroke: '#e3e3e3',
+              strokeDasharray: '',
+            },
           }}
           style={{
             marginVertical: 10,
