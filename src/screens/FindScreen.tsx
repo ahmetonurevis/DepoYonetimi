@@ -100,6 +100,7 @@ const FindScreen = () => {
           }}
           showBarTops={false}
           fromZero={true}
+          verticalLabelRotation={13}
         />
       </View>
     </ScrollView>
