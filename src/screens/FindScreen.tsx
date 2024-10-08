@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, Dimensions } from 'react-native';
-import { BarChart } from 'react-native-chart-kit';
+import { LineChart } from 'react-native-chart-kit';
 import firestore from '@react-native-firebase/firestore';
 import { styles } from '../css/findcss';
 
@@ -125,39 +125,37 @@ const FindScreen = () => {
 
       <View style={styles.chartContainer}>
         <Text style={styles.chartTitle}>Gelir ve Gider Grafiği</Text>
-        <BarChart
+        <LineChart
           data={{
             labels: barData.labels,
             datasets: [
-              { data: barData.datasets[0].data, color: () => '#4CAF50' },
-              { data: barData.datasets[1].data, color: () => '#F44336' },
+              { data: barData.datasets[0].data, color: () => '#4CAF50' }, 
+              { data: barData.datasets[1].data, color: () => '#F44336' }, 
             ],
           }}
           width={screenWidth - 30}
           height={220}
           yAxisSuffix="₺"
-          yAxisInterval={1}
+          fromZero={true}  
+          yAxisInterval={1}  
           chartConfig={{
             backgroundColor: '#ffffff',
             backgroundGradientFrom: '#ffffff',
             backgroundGradientTo: '#ffffff',
-            decimalPlaces: 0,
+            decimalPlaces: 0, 
             color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
             labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            barPercentage: 0.5,
-            barRadius: 5,
-            propsForBackgroundLines: {
-              stroke: '#e3e3e3',
-              strokeDasharray: '',
+            propsForDots: {
+              r: '4',
+              strokeWidth: '2',
+              stroke: '#ffa726',
             },
           }}
+          bezier
           style={{
             marginVertical: 10,
             borderRadius: 16,
           }}
-          showBarTops={false}
-          fromZero={true}
-          verticalLabelRotation={13}
         />
       </View>
     </ScrollView>
